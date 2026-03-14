@@ -15,6 +15,16 @@ export function MetadataCard({ metadata }) {
   const intent = INTENT_CONFIG[metadata.intent?.toUpperCase()] || INTENT_CONFIG.TASK;
   const confidence = metadata.confidence != null ? Math.round(metadata.confidence * 100) : null;
 
+  // Normalize emotion — may be a string or object {primary, intensity, valence, arousal}
+  const emotionLabel = typeof metadata.emotion === 'string'
+    ? metadata.emotion
+    : metadata.emotion?.primary || null;
+
+  // Normalize entities — may be strings or objects with a .name property
+  const entityNames = (metadata.entities || []).map((e) =>
+    typeof e === 'string' ? e : e?.name || String(e)
+  );
+
   return (
     <div
       className="metadata-card"
@@ -33,19 +43,19 @@ export function MetadataCard({ metadata }) {
           <span className="metadata-card__confidence">{confidence}%</span>
         )}
 
-        {metadata.entities?.length > 0 && (
+        {entityNames.length > 0 && (
           <span className="metadata-card__entities">
-            {metadata.entities.slice(0, 3).join(', ')}
-            {metadata.entities.length > 3 && ` +${metadata.entities.length - 3}`}
+            {entityNames.slice(0, 3).join(', ')}
+            {entityNames.length > 3 && ` +${entityNames.length - 3}`}
           </span>
         )}
 
-        {metadata.emotion && (
+        {emotionLabel && (
           <span
             className="metadata-card__emotion"
-            style={{ color: EMOTION_COLORS[metadata.emotion] || '#888' }}
+            style={{ color: EMOTION_COLORS[emotionLabel] || '#888' }}
           >
-            {metadata.emotion}
+            {emotionLabel}
           </span>
         )}
       </div>
@@ -59,10 +69,10 @@ export function MetadataCard({ metadata }) {
             </div>
           )}
 
-          {metadata.entities?.length > 0 && (
+          {entityNames.length > 0 && (
             <div className="metadata-card__row">
               <span className="metadata-card__label">Entities</span>
-              <span className="metadata-card__value">{metadata.entities.join(', ')}</span>
+              <span className="metadata-card__value">{entityNames.join(', ')}</span>
             </div>
           )}
 
@@ -71,7 +81,7 @@ export function MetadataCard({ metadata }) {
               <span className="metadata-card__label">Scores</span>
               <span className="metadata-card__value">
                 {Object.entries(metadata.all_scores)
-                  .map(([k, v]) => `${k}: ${Math.round(v * 100)}%`)
+                  .map(([k, v]) => `${k}: ${Math.round(Number(v) * 100)}%`)
                   .join(', ')}
               </span>
             </div>

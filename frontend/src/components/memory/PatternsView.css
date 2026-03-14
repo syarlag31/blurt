@@ -1,0 +1,149 @@
+/* ===== PatternsView — Insight cards layout ===== */
+
+/* ── Status states ──────────────────────────────────────────────── */
+.patterns-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+}
+
+.patterns-status__spinner {
+  animation: patterns-spin 1s linear infinite;
+}
+
+@keyframes patterns-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.patterns-status__text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.patterns-status__detail {
+  font-size: 12px;
+  opacity: 0.7;
+  max-width: 260px;
+  text-align: center;
+}
+
+.patterns-status--error {
+  color: var(--danger, #ef4444);
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.patterns-header {
+  margin-bottom: 12px;
+}
+
+.patterns-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patterns-header__icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.patterns-header__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-heading, var(--text));
+}
+
+.patterns-header__loading {
+  animation: patterns-spin 1s linear infinite;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.patterns-header__subtitle {
+  margin: 4px 0 0 26px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ── Filter chips ───────────────────────────────────────────────── */
+.patterns-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.patterns-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.patterns-filters__icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.patterns-filters__chips {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.patterns-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  min-height: 32px;
+  min-width: 44px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.patterns-filter-chip:active {
+  transform: scale(0.96);
+}
+
+.patterns-filter-chip--active {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Card list ──────────────────────────────────────────────────── */
+.patterns-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 24px;
+}

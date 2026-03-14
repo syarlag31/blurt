@@ -1,0 +1,210 @@
+/* ===================================================================
+ * UndoToast — 5-second undo notification with countdown
+ *
+ * Premium dark-themed toast using ui-ux-pro-max design system.
+ * Features countdown ring, undo action, and smooth auto-dismiss.
+ * =================================================================== */
+
+.undo-toast {
+  position: fixed;
+  bottom: calc(80px + var(--safe-bottom, 0px));
+  left: 16px;
+  right: 16px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-surface-alt, #161d2f);
+  border: 1px solid var(--border, rgba(148, 176, 215, 0.10));
+  border-radius: var(--radius, 12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-family: var(--sans);
+  pointer-events: auto;
+
+  /* Entry animation */
+  animation: undo-toast-enter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.undo-toast--dismissing {
+  animation: undo-toast-exit 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ── Countdown ring ─────────────────────────────────────────────── */
+.undo-toast__countdown {
+  position: relative;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.undo-toast__countdown-ring {
+  width: 32px;
+  height: 32px;
+  transform: rotate(-90deg);
+}
+
+.undo-toast__countdown-track {
+  fill: none;
+  stroke: var(--border, rgba(148, 176, 215, 0.10));
+  stroke-width: 3;
+}
+
+.undo-toast__countdown-progress {
+  fill: none;
+  stroke: var(--accent, #6390ff);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 75.4; /* 2 * π * 12 */
+  stroke-dashoffset: 0;
+  transition: none;
+}
+
+.undo-toast__countdown-progress--animate {
+  transition: stroke-dashoffset linear;
+}
+
+.undo-toast__countdown-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #8494a7);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Message body ───────────────────────────────────────────────── */
+.undo-toast__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.undo-toast__message {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text, #cbd5e1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Undo action button ─────────────────────────────────────────── */
+.undo-toast__action {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--accent, #6390ff);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--accent, #6390ff);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.undo-toast__action:active {
+  background: var(--bg-active, rgba(99, 144, 255, 0.10));
+  transform: scale(0.96);
+}
+
+/* ── Dismiss close button ────────────────────────────────────────── */
+.undo-toast__close {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted, #5a6a7e);
+  cursor: pointer;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease, background 0.15s ease;
+  margin-right: -8px;
+}
+
+.undo-toast__close:active {
+  background: var(--bg-active, rgba(99, 144, 255, 0.10));
+  color: var(--text, #cbd5e1);
+}
+
+.undo-toast__close-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Progress bar (bottom edge) ──────────────────────────────────── */
+.undo-toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0 0 var(--radius, 12px) var(--radius, 12px);
+  overflow: hidden;
+}
+
+.undo-toast__progress-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--accent, #6390ff);
+  transform-origin: left center;
+  opacity: 0.5;
+  transition: none;
+}
+
+.undo-toast__progress-bar--animate {
+  transition: transform linear;
+}
+
+/* ── Animations ──────────────────────────────────────────────────── */
+@keyframes undo-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes undo-toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .undo-toast {
+    animation-duration: 0.01ms;
+  }
+  .undo-toast--dismissing {
+    animation-duration: 0.01ms;
+  }
+  .undo-toast__countdown-progress--animate,
+  .undo-toast__progress-bar--animate {
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,218 @@
+/* ===== StatsCard — Reusable metric display card ===== */
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  min-height: 64px;
+}
+
+.stats-card:active {
+  border-color: var(--border-strong, var(--border));
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Icon container ────────────────────────────────── */
+.stats-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: var(--accent-light);
+  color: var(--accent);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Semantic icon color variants */
+.stats-card__icon--success {
+  background: var(--success-light, rgba(16, 185, 129, 0.1));
+  color: var(--success);
+}
+
+.stats-card__icon--warning {
+  background: var(--warning-light, rgba(245, 158, 11, 0.1));
+  color: var(--warning);
+}
+
+.stats-card__icon--danger {
+  background: var(--danger-light, rgba(239, 68, 68, 0.1));
+  color: var(--danger);
+}
+
+.stats-card__icon--info {
+  background: var(--info-light, rgba(56, 189, 248, 0.12));
+  color: var(--info, #38bdf8);
+}
+
+/* ── Content area ──────────────────────────────────── */
+.stats-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.stats-card__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ── Value row with animated count ─────────────────── */
+.stats-card__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.stats-card__value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-heading);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Animated count transition ─────────────────────── */
+.stats-card__value--animate {
+  animation: stats-count-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes stats-count-pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Trend indicator ───────────────────────────────── */
+.stats-card__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.stats-card__trend--up {
+  color: var(--success);
+  background: var(--success-light, rgba(16, 185, 129, 0.1));
+}
+
+.stats-card__trend--down {
+  color: var(--danger);
+  background: var(--danger-light, rgba(239, 68, 68, 0.1));
+}
+
+.stats-card__trend--neutral {
+  color: var(--text-secondary);
+  background: var(--accent-light);
+}
+
+.stats-card__trend-icon {
+  display: inline-flex;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stats-card__trend--up .stats-card__trend-icon {
+  transform: translateY(-1px);
+}
+
+.stats-card__trend--down .stats-card__trend-icon {
+  transform: translateY(1px);
+}
+
+/* ── Status dot indicator ──────────────────────────── */
+.stats-card__status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.stats-card__status--active {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+  animation: stats-status-pulse 2s ease-in-out infinite;
+}
+
+.stats-card__status--inactive {
+  background: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.stats-card__status--warning {
+  background: var(--warning);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.stats-card__status--error {
+  background: var(--danger);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  animation: stats-status-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes stats-status-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ── Loading skeleton state ────────────────────────── */
+.stats-card--loading .stats-card__value,
+.stats-card--loading .stats-card__label {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, #e5e7eb) 25%,
+    var(--skeleton-shine, #f3f4f6) 50%,
+    var(--skeleton-base, #e5e7eb) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  color: transparent;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.stats-card--loading .stats-card__value {
+  min-width: 48px;
+  min-height: 28px;
+}
+
+.stats-card--loading .stats-card__label {
+  min-width: 64px;
+  min-height: 14px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

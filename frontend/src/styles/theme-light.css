@@ -1,0 +1,791 @@
+/* ===================================================================
+   Blurt — Light Theme (ui-ux-pro-max design system)
+
+   Premium light mode with:
+   - Clean whites with warm undertone
+   - Multi-level elevation via subtle shadows (not borders)
+   - Clear typographic hierarchy
+   - Proper surface stacking (bg < surface < elevated < overlay)
+   - Subtle separators that don't compete with content
+   =================================================================== */
+
+/* ── Light theme tokens (default, no media query needed) ─────────── */
+:root,
+[data-theme="light"] {
+  /* ── Backgrounds & Surfaces ─────────────────────────────────────
+     4-level surface system for clear depth hierarchy:
+     bg (page) → surface (cards) → elevated (popovers) → overlay (modals)
+  */
+  --bg:             #f8f9fb;       /* Cool off-white page background */
+  --bg-surface:     #ffffff;       /* Card/panel surfaces — pure white */
+  --bg-elevated:    #ffffff;       /* Popovers, dropdowns — white with shadow */
+  --bg-overlay:     rgba(0, 0, 0, 0.4);  /* Modal backdrop */
+  --bg-subtle:      #f1f3f8;       /* Subtle fill for secondary areas */
+  --bg-inset:       #eef0f5;       /* Inset areas, wells, code blocks */
+  --bg-hover:       #f1f3f8;       /* Hover state for interactive surfaces */
+  --bg-active:      #e8eaf2;       /* Active/pressed state */
+  --bg-selected:    #eef2ff;       /* Selected row/item highlight */
+
+  /* ── Typography ─────────────────────────────────────────────────
+     Clear 4-level text hierarchy:
+     heading → primary → secondary → tertiary
+  */
+  --text:           #1a1d26;       /* Primary body text — near-black */
+  --text-heading:   #0f1119;       /* Headings — deepest ink */
+  --text-secondary: #5f6578;       /* Secondary/supporting text */
+  --text-tertiary:  #8b90a0;       /* Tertiary/disabled text */
+  --text-inverse:   #ffffff;       /* Text on accent/dark backgrounds */
+  --text-link:      #4f6af5;       /* Link color */
+
+  /* ── Brand & Accent ─────────────────────────────────────────────
+     Refined indigo-blue accent with accessible contrast
+  */
+  --accent:         #4f6af5;       /* Primary accent — refined indigo-blue */
+  --accent-hover:   #3d56e0;       /* Accent hover state */
+  --accent-active:  #2e45c7;       /* Accent pressed state */
+  --accent-light:   rgba(79, 106, 245, 0.08);  /* Accent tint for backgrounds */
+  --accent-medium:  rgba(79, 106, 245, 0.15);  /* Accent tint — medium */
+  --accent-text:    #ffffff;       /* Text on accent backgrounds */
+  --accent-subtle:  #eef2ff;       /* Very light accent fill */
+
+  /* ── Semantic Colors ────────────────────────────────────────────
+     Muted versions that don't scream — professional palette
+  */
+  --success:        #22a869;       /* Success green */
+  --success-light:  rgba(34, 168, 105, 0.08);
+  --success-text:   #166b43;
+  --warning:        #e5920a;       /* Warning amber */
+  --warning-light:  rgba(229, 146, 10, 0.08);
+  --warning-text:   #8a5800;
+  --danger:         #e5484d;       /* Danger red */
+  --danger-light:   rgba(229, 72, 77, 0.06);
+  --danger-text:    #c13239;
+  --info:           #3b82f6;       /* Info blue */
+  --info-light:     rgba(59, 130, 246, 0.08);
+
+  /* ── Borders & Separators ───────────────────────────────────────
+     Subtle borders that create structure without visual noise
+  */
+  --border:         #e4e7ee;       /* Default border — subtle gray */
+  --border-light:   #eef0f5;       /* Very subtle separator */
+  --border-medium:  #d4d8e3;       /* Medium emphasis border */
+  --border-focus:   var(--accent);  /* Focus ring color */
+  --border-error:   var(--danger);  /* Error state border */
+
+  /* ── Shadows & Elevation ────────────────────────────────────────
+     Multi-level shadow system — the key to premium light mode.
+     Uses layered shadows for realistic depth perception.
+  */
+  /* Level 0: Flat — no shadow, relies on background contrast */
+  --shadow-xs:      0 1px 2px rgba(0, 0, 0, 0.04);
+
+  /* Level 1: Cards, list items — barely-there lift */
+  --shadow-sm:      0 1px 3px rgba(0, 0, 0, 0.06),
+                    0 1px 2px rgba(0, 0, 0, 0.04);
+
+  /* Level 2: Active cards, hovering elements */
+  --shadow-md:      0 4px 8px -2px rgba(0, 0, 0, 0.06),
+                    0 2px 4px -2px rgba(0, 0, 0, 0.04);
+
+  /* Level 3: Dropdowns, popovers, FABs */
+  --shadow-lg:      0 8px 24px -4px rgba(0, 0, 0, 0.08),
+                    0 4px 8px -4px rgba(0, 0, 0, 0.04);
+
+  /* Level 4: Modals, overlays — maximum lift */
+  --shadow-xl:      0 16px 48px -8px rgba(0, 0, 0, 0.1),
+                    0 8px 16px -8px rgba(0, 0, 0, 0.06);
+
+  /* Focus ring shadow */
+  --shadow-focus:   0 0 0 3px rgba(79, 106, 245, 0.2);
+
+  /* Inset shadow for pressed/inset states */
+  --shadow-inset:   inset 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  /* ── Radii ──────────────────────────────────────────────────────
+  */
+  --radius-xs:      4px;
+  --radius-sm:      8px;
+  --radius:         12px;
+  --radius-lg:      16px;
+  --radius-xl:      20px;
+  --radius-full:    9999px;
+
+  /* ── Typography Scale ───────────────────────────────────────────
+     Using Inter font family with proper optical sizing
+  */
+  --sans:           'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:      'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* ── Spacing ────────────────────────────────────────────────────
+  */
+  --space-1:        4px;
+  --space-2:        8px;
+  --space-3:        12px;
+  --space-4:        16px;
+  --space-5:        20px;
+  --space-6:        24px;
+  --space-8:        32px;
+  --space-10:       40px;
+  --space-12:       48px;
+
+  /* ── Z-index Scale ──────────────────────────────────────────────
+  */
+  --z-base:         1;
+  --z-sticky:       10;
+  --z-nav:          20;
+  --z-fab:          30;
+  --z-modal:        40;
+  --z-toast:        50;
+
+  /* ── Transitions ────────────────────────────────────────────────
+  */
+  --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast:  120ms;
+  --duration-normal: 200ms;
+  --duration-slow:  300ms;
+
+  /* ── Safe Areas ─────────────────────────────────────────────────
+  */
+  --safe-top:       env(safe-area-inset-top, 0px);
+  --safe-bottom:    env(safe-area-inset-bottom, 0px);
+  --safe-left:      env(safe-area-inset-left, 0px);
+  --safe-right:     env(safe-area-inset-right, 0px);
+
+  /* ── Scrollbar ──────────────────────────────────────────────────
+  */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
+
+  /* ── Tab bar specific ───────────────────────────────────────────
+  */
+  --tab-bar-bg:     #ffffff;
+  --tab-bar-border: #e4e7ee;
+  --tab-inactive:   #8b90a0;
+  --tab-active:     var(--accent);
+
+  /* ── FAB specific ───────────────────────────────────────────────
+  */
+  --fab-bg:         var(--accent);
+  --fab-color:      #ffffff;
+  --fab-shadow:     0 6px 20px -2px rgba(79, 106, 245, 0.35),
+                    0 3px 8px -2px rgba(0, 0, 0, 0.1);
+  --fab-shadow-active: 0 2px 8px -2px rgba(79, 106, 245, 0.3),
+                       0 1px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Light Theme Surface Utilities ────────────────────────────────── */
+
+/* Card surface — clean white with subtle shadow lift */
+[data-theme="light"] .surface-card,
+:root:not([data-theme="dark"]) .surface-card {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius);
+}
+
+/* Elevated surface — more prominent shadow for floating elements */
+[data-theme="light"] .surface-elevated,
+:root:not([data-theme="dark"]) .surface-elevated {
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius);
+}
+
+/* Inset surface — pressed-in appearance */
+[data-theme="light"] .surface-inset,
+:root:not([data-theme="dark"]) .surface-inset {
+  background: var(--bg-inset);
+  box-shadow: var(--shadow-inset);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Light Theme Component Overrides ──────────────────────────────── */
+
+/* Header — clean white with bottom shadow instead of border */
+:root:not([data-theme="dark"]) .app__header,
+[data-theme="light"] .app__header {
+  background: var(--bg-surface);
+  border-bottom: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Chat bubbles — user gets accent, server gets subtle surface */
+:root:not([data-theme="dark"]) .chat-bubble--server,
+[data-theme="light"] .chat-bubble--server {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-xs);
+}
+
+:root:not([data-theme="dark"]) .chat-bubble--user,
+[data-theme="light"] .chat-bubble--user {
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 2px 8px -2px rgba(79, 106, 245, 0.3);
+}
+
+/* Input bar — elevated from page with shadow */
+:root:not([data-theme="dark"]) .app__input-bar,
+[data-theme="light"] .app__input-bar {
+  background: var(--bg-surface);
+  border-top: none;
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Text input field — soft inset appearance */
+:root:not([data-theme="dark"]) .text-input,
+[data-theme="light"] .text-input {
+  background: var(--bg-subtle);
+  border: 1.5px solid transparent;
+  transition: border-color var(--duration-normal) var(--ease-in-out),
+              box-shadow var(--duration-normal) var(--ease-in-out),
+              background var(--duration-normal) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .text-input:focus-within,
+[data-theme="light"] .text-input:focus-within {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Task card — clean surface with subtle shadow */
+:root:not([data-theme="dark"]) .task-card,
+[data-theme="light"] .task-card {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+/* Metadata card — slightly recessed */
+:root:not([data-theme="dark"]) .metadata-card,
+[data-theme="light"] .metadata-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  box-shadow: none;
+}
+
+:root:not([data-theme="dark"]) .metadata-card:active,
+[data-theme="light"] .metadata-card:active {
+  background: var(--bg-hover);
+}
+
+/* Tags — softer appearance */
+:root:not([data-theme="dark"]) .task-card__tag,
+[data-theme="light"] .task-card__tag {
+  background: var(--bg-inset);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+}
+
+/* Tab bar — clean bottom nav with top shadow */
+:root:not([data-theme="dark"]) .tab-bar,
+[data-theme="light"] .tab-bar {
+  background: var(--tab-bar-bg);
+  border-top: none;
+  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Nudge toast — refined appearance */
+:root:not([data-theme="dark"]) .nudge-toast,
+[data-theme="light"] .nudge-toast {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--accent);
+}
+
+/* Scrollbar styling for light mode */
+:root:not([data-theme="dark"]) ::-webkit-scrollbar {
+  width: 4px;
+}
+
+:root:not([data-theme="dark"]) ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:root:not([data-theme="dark"]) ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+:root:not([data-theme="dark"]) ::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* ── Light Theme — Bottom Tab Nav Styles ──────────────────────────── */
+:root:not([data-theme="dark"]) .bottom-nav,
+[data-theme="light"] .bottom-nav {
+  background: var(--bg-surface);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+:root:not([data-theme="dark"]) .bottom-nav__item,
+[data-theme="light"] .bottom-nav__item {
+  color: var(--tab-inactive);
+}
+
+:root:not([data-theme="dark"]) .bottom-nav__item--active,
+[data-theme="light"] .bottom-nav__item--active {
+  color: var(--tab-active);
+}
+
+/* ── Light Theme — Selection & Focus States ───────────────────────── */
+:root:not([data-theme="dark"]) ::selection {
+  background: rgba(79, 106, 245, 0.15);
+  color: var(--text);
+}
+
+:root:not([data-theme="dark"]) :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Light Theme — Status Badges ──────────────────────────────────── */
+:root:not([data-theme="dark"]) .badge--success,
+[data-theme="light"] .badge--success {
+  background: var(--success-light);
+  color: var(--success-text);
+}
+
+:root:not([data-theme="dark"]) .badge--warning,
+[data-theme="light"] .badge--warning {
+  background: var(--warning-light);
+  color: var(--warning-text);
+}
+
+:root:not([data-theme="dark"]) .badge--danger,
+[data-theme="light"] .badge--danger {
+  background: var(--danger-light);
+  color: var(--danger-text);
+}
+
+:root:not([data-theme="dark"]) .badge--info,
+[data-theme="light"] .badge--info {
+  background: var(--info-light);
+  color: var(--accent);
+}
+
+/* ── Light Theme — List & Item Styles ─────────────────────────────── */
+:root:not([data-theme="dark"]) .list-item,
+[data-theme="light"] .list-item {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--duration-fast) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .list-item:active,
+[data-theme="light"] .list-item:active {
+  background: var(--bg-active);
+}
+
+/* ── Light Theme — Section Headers ────────────────────────────────── */
+:root:not([data-theme="dark"]) .section-header,
+[data-theme="light"] .section-header {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--space-2) var(--space-4);
+}
+
+/* ── Light Theme — Empty States ───────────────────────────────────── */
+:root:not([data-theme="dark"]) .empty-state,
+[data-theme="light"] .empty-state {
+  color: var(--text-tertiary);
+}
+
+:root:not([data-theme="dark"]) .empty-state__icon,
+[data-theme="light"] .empty-state__icon {
+  color: var(--border-medium);
+}
+
+/* ── Light Theme — Skeleton Loading ───────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+:root:not([data-theme="dark"]) .skeleton,
+[data-theme="light"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-inset) 25%,
+    var(--bg-subtle) 37%,
+    var(--bg-inset) 63%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Light Theme — Dividers ───────────────────────────────────────── */
+:root:not([data-theme="dark"]) .divider,
+[data-theme="light"] .divider {
+  height: 1px;
+  background: var(--border-light);
+  border: none;
+  margin: 0;
+}
+
+/* ── Light Theme — Chip / Pill Styles ─────────────────────────────── */
+:root:not([data-theme="dark"]) .chip,
+[data-theme="light"] .chip {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+:root:not([data-theme="dark"]) .chip--accent,
+[data-theme="light"] .chip--accent {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: rgba(79, 106, 245, 0.15);
+}
+
+/* ── Light Theme — Button Variants ────────────────────────────────── */
+:root:not([data-theme="dark"]) .btn-primary,
+[data-theme="light"] .btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 1px 3px rgba(79, 106, 245, 0.2);
+  border: none;
+  transition: background var(--duration-fast) var(--ease-in-out),
+              box-shadow var(--duration-fast) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .btn-primary:active,
+[data-theme="light"] .btn-primary:active {
+  background: var(--accent-active);
+  box-shadow: 0 1px 2px rgba(79, 106, 245, 0.15);
+}
+
+:root:not([data-theme="dark"]) .btn-secondary,
+[data-theme="light"] .btn-secondary {
+  background: var(--bg-subtle);
+  color: var(--text);
+  border: 1px solid var(--border);
+  transition: background var(--duration-fast) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .btn-secondary:active,
+[data-theme="light"] .btn-secondary:active {
+  background: var(--bg-active);
+}
+
+:root:not([data-theme="dark"]) .btn-ghost,
+[data-theme="light"] .btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  transition: background var(--duration-fast) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .btn-ghost:active,
+[data-theme="light"] .btn-ghost:active {
+  background: var(--bg-hover);
+}
+
+/* ── Light Theme — Audio Playback Bar ─────────────────────────────── */
+:root:not([data-theme="dark"]) .audio-playback-bar,
+[data-theme="light"] .audio-playback-bar {
+  background: var(--accent-subtle);
+  border: 1px solid rgba(79, 106, 245, 0.1);
+}
+
+/* ── Light Theme — Voice Button ───────────────────────────────────── */
+:root:not([data-theme="dark"]) .voice-btn,
+[data-theme="light"] .voice-btn {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+:root:not([data-theme="dark"]) .voice-btn--recording,
+[data-theme="light"] .voice-btn--recording {
+  border-color: var(--danger);
+  background: var(--danger-light);
+  box-shadow: 0 0 0 4px rgba(229, 72, 77, 0.1);
+}
+
+/* ── Light Theme — Connection Status ──────────────────────────────── */
+:root:not([data-theme="dark"]) .conn-status__dot {
+  box-shadow: 0 0 0 2px var(--bg-surface);
+}
+
+/* ── Light Theme — Graph Visualization Overrides ──────────────────── */
+:root:not([data-theme="dark"]) .graph-container,
+[data-theme="light"] .graph-container {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+}
+
+/* ── Light Theme — Debug Panel ────────────────────────────────────── */
+:root:not([data-theme="dark"]) .debug-panel,
+[data-theme="light"] .debug-panel {
+  background: var(--bg-surface);
+}
+
+:root:not([data-theme="dark"]) .debug-panel__code,
+[data-theme="light"] .debug-panel__code {
+  background: var(--bg-inset);
+  color: var(--text);
+  font-family: var(--font-mono);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Light Theme — Search Input ───────────────────────────────────── */
+:root:not([data-theme="dark"]) .search-input,
+[data-theme="light"] .search-input {
+  background: var(--bg-subtle);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-full);
+  color: var(--text);
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .search-input:focus,
+[data-theme="light"] .search-input:focus {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+
+:root:not([data-theme="dark"]) .search-input::placeholder,
+[data-theme="light"] .search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ── Light Theme — Toggle / Switch ────────────────────────────────── */
+:root:not([data-theme="dark"]) .toggle,
+[data-theme="light"] .toggle {
+  background: var(--border-medium);
+  border-radius: var(--radius-full);
+  transition: background var(--duration-normal) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .toggle--active,
+[data-theme="light"] .toggle--active {
+  background: var(--accent);
+}
+
+:root:not([data-theme="dark"]) .toggle__knob,
+[data-theme="light"] .toggle__knob {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Light Theme — Progress Indicators ────────────────────────────── */
+:root:not([data-theme="dark"]) .progress-bar,
+[data-theme="light"] .progress-bar {
+  background: var(--bg-inset);
+  border-radius: var(--radius-full);
+}
+
+:root:not([data-theme="dark"]) .progress-bar__fill,
+[data-theme="light"] .progress-bar__fill {
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+/* ── Light Theme — Tooltip ────────────────────────────────────────── */
+:root:not([data-theme="dark"]) .tooltip,
+[data-theme="light"] .tooltip {
+  background: var(--text-heading);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ── Light Theme — FAB (Floating Action Button) ───────────────────── */
+:root:not([data-theme="dark"]) .capture-fab,
+[data-theme="light"] .capture-fab {
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: var(--fab-shadow);
+  transition: box-shadow var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-spring);
+}
+
+:root:not([data-theme="dark"]) .capture-fab:active,
+[data-theme="light"] .capture-fab:active {
+  box-shadow: var(--fab-shadow-active);
+  transform: scale(0.95);
+}
+
+:root:not([data-theme="dark"]) .capture-fab--recording,
+[data-theme="light"] .capture-fab--recording {
+  background: var(--danger);
+  box-shadow: 0 6px 20px -2px rgba(229, 72, 77, 0.35),
+              0 3px 8px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Light Theme — App Shell Nav ──────────────────────────────────── */
+:root:not([data-theme="dark"]) .app-shell__nav,
+[data-theme="light"] .app-shell__nav {
+  background: var(--bg-surface);
+  border-top: none;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+:root:not([data-theme="dark"]) .app-shell__nav-item,
+[data-theme="light"] .app-shell__nav-item {
+  color: var(--tab-inactive);
+  transition: color var(--duration-fast) var(--ease-in-out);
+}
+
+:root:not([data-theme="dark"]) .app-shell__nav-item--active,
+[data-theme="light"] .app-shell__nav-item--active {
+  color: var(--tab-active);
+}
+
+/* ── Light Theme — Memory Graph Nodes & Edges ─────────────────────── */
+:root:not([data-theme="dark"]) .memory-node,
+[data-theme="light"] .memory-node {
+  fill: var(--bg-surface);
+  stroke: var(--border);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
+}
+
+:root:not([data-theme="dark"]) .memory-node--active,
+[data-theme="light"] .memory-node--active {
+  fill: var(--accent-subtle);
+  stroke: var(--accent);
+  filter: drop-shadow(0 1px 4px rgba(79, 106, 245, 0.15));
+}
+
+:root:not([data-theme="dark"]) .memory-edge,
+[data-theme="light"] .memory-edge {
+  stroke: var(--border);
+}
+
+/* ── Light Theme — Debug Log ──────────────────────────────────────── */
+:root:not([data-theme="dark"]) .debug-log,
+[data-theme="light"] .debug-log {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  font-family: var(--font-mono);
+  border-radius: var(--radius-sm);
+}
+
+:root:not([data-theme="dark"]) .debug-log__timestamp,
+[data-theme="light"] .debug-log__timestamp {
+  color: var(--text-tertiary);
+}
+
+:root:not([data-theme="dark"]) .debug-log__type,
+[data-theme="light"] .debug-log__type {
+  color: var(--accent);
+}
+
+:root:not([data-theme="dark"]) .debug-log__type--error,
+[data-theme="light"] .debug-log__type--error {
+  color: var(--danger);
+}
+
+:root:not([data-theme="dark"]) .debug-log__type--warn,
+[data-theme="light"] .debug-log__type--warn {
+  color: var(--warning-text);
+}
+
+:root:not([data-theme="dark"]) .debug-panel__header,
+[data-theme="light"] .debug-panel__header {
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* ── Light Theme — Badge Components ───────────────────────────────── */
+:root:not([data-theme="dark"]) .badge,
+[data-theme="light"] .badge {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+}
+
+:root:not([data-theme="dark"]) .badge--accent,
+[data-theme="light"] .badge--accent {
+  background: var(--accent-subtle);
+  border-color: rgba(79, 106, 245, 0.15);
+  color: var(--accent);
+}
+
+/* ── Light Theme — Task area ──────────────────────────────────────── */
+:root:not([data-theme="dark"]) .app__task-area,
+[data-theme="light"] .app__task-area {
+  background: var(--bg);
+  border-bottom: none;
+}
+
+/* ── Light Theme — Chat Feed ──────────────────────────────────────── */
+:root:not([data-theme="dark"]) .chat-feed__placeholder-text,
+[data-theme="light"] .chat-feed__placeholder-text {
+  color: var(--text-heading);
+}
+
+:root:not([data-theme="dark"]) .chat-feed__placeholder-hint,
+[data-theme="light"] .chat-feed__placeholder-hint {
+  color: var(--text-tertiary);
+}
+
+:root:not([data-theme="dark"]) .chat-feed__new-msg-pill,
+[data-theme="light"] .chat-feed__new-msg-pill {
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 2px 12px rgba(79, 106, 245, 0.25);
+}
+
+/* ── Light Theme — Status Dots ────────────────────────────────────── */
+:root:not([data-theme="dark"]) .status-dot--online,
+[data-theme="light"] .status-dot--online {
+  background: var(--success);
+}
+
+:root:not([data-theme="dark"]) .status-dot--offline,
+[data-theme="light"] .status-dot--offline {
+  background: var(--text-tertiary);
+}
+
+:root:not([data-theme="dark"]) .status-dot--busy,
+[data-theme="light"] .status-dot--busy {
+  background: var(--danger);
+}
+
+/* ── Light Theme — Selected List Items ────────────────────────────── */
+:root:not([data-theme="dark"]) .list-item--selected,
+[data-theme="light"] .list-item--selected {
+  background: var(--bg-selected);
+}
+
+/* ── Print Styles ─────────────────────────────────────────────────── */
+@media print {
+  :root {
+    --bg: #ffffff;
+    --bg-surface: #ffffff;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+  }
+}

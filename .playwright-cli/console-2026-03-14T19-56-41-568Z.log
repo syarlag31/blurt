@@ -1,0 +1,21 @@
+Total messages: 6 (Errors: 1, Warnings: 2)
+Returning 4 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:14336
+[WARNING] WebSocket connection to 'ws://localhost:5173/ws/audio' failed: WebSocket is closed before the connection is established. @ http://localhost:5173/src/hooks/useWebSocket.js:121
+[WARNING] %s
+
+%s
+ An error occurred in the <span> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:5256
+Error: Objects are not valid as a React child (found: object with keys {primary, intensity, valence, arousal}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectTypeImpl (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:3539:10)
+    at throwOnInvalidObjectType (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:3543:105)
+    at reconcileChildFibersImpl (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:3856:6)
+    at http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:3868:28
+    at reconcileChildren (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:5385:46)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:6199:1569)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:850:66)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:8428:92)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:8324:37)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=5c2c6998:8308:6)

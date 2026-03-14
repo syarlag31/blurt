@@ -1,0 +1,379 @@
+/* ===== GraphView — Knowledge Graph Visualization ===== */
+
+.graph-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Stats bar ──────────────────────────────────────────── */
+.graph-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  background: var(--bg, #fff);
+}
+
+.graph-stats__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── SVG canvas ─────────────────────────────────────────── */
+.graph-svg {
+  flex: 1;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  touch-action: pan-x pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Node groups ────────────────────────────────────────── */
+.graph-node-group {
+  transition: opacity 0.3s ease;
+  outline: none;
+}
+
+.graph-node-group:focus-visible .graph-node__circle {
+  stroke: var(--accent, #6390ff);
+  stroke-width: 3;
+}
+
+.graph-node__circle {
+  transition: stroke-width 0.2s ease, stroke 0.2s ease;
+}
+
+.graph-node__touch-target {
+  pointer-events: all;
+}
+
+.graph-node__glow {
+  transition: stroke-width 0.3s ease;
+}
+
+.graph-node__label {
+  font-family: 'Inter', system-ui, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.graph-node__count {
+  font-family: 'Inter', system-ui, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Links ──────────────────────────────────────────────── */
+.graph-link {
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+/* ── Hint ───────────────────────────────────────────────── */
+.graph-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  background: var(--surface-elevated, rgba(255, 255, 255, 0.9));
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: graph-hint-fade 4s ease-in-out forwards;
+  white-space: nowrap;
+}
+
+@keyframes graph-hint-fade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Spinner ────────────────────────────────────────────── */
+.graph-spinner {
+  animation: graph-spin 1s linear infinite;
+}
+
+@keyframes graph-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Entity Detail Panel ===== */
+
+.entity-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 55vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface-elevated, #fff);
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  padding: 0 0 env(safe-area-inset-bottom, 16px);
+  animation: entity-panel-slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 20;
+}
+
+@keyframes entity-panel-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.entity-panel__header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  position: sticky;
+  top: 0;
+  background: var(--surface-elevated, #fff);
+  z-index: 1;
+}
+
+.entity-panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.entity-panel__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.entity-panel__name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-heading, #1a1a1a);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entity-panel__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.entity-panel__close:active {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.05));
+}
+
+.entity-panel__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.entity-panel__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.entity-panel__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Body ───────────────────────────────────────────── */
+.entity-panel__body {
+  padding: 0 16px 16px;
+}
+
+.entity-panel__section {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.05));
+}
+
+.entity-panel__section:last-child {
+  border-bottom: none;
+}
+
+.entity-panel__section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 8px;
+}
+
+/* ── Dates ──────────────────────────────────────────── */
+.entity-panel__dates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.entity-panel__date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-primary, #374151);
+}
+
+.entity-panel__date-row svg {
+  color: var(--text-secondary, #6b7280);
+  flex-shrink: 0;
+}
+
+/* ── Connections ────────────────────────────────────── */
+.entity-panel__connections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.entity-panel__connection-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  min-height: 44px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  background: var(--surface, rgba(0, 0, 0, 0.02));
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #374151);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.entity-panel__connection-chip:active {
+  transform: scale(0.96);
+  background: var(--surface-hover, rgba(0, 0, 0, 0.05));
+}
+
+.entity-panel__connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.entity-panel__connection-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entity-panel__connection-weight {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Episode IDs ────────────────────────────────────── */
+.entity-panel__episode-ids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.entity-panel__episode-id {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--text-secondary, #6b7280);
+  background: var(--surface, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.05));
+}
+
+.entity-panel__more {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent, #6390ff);
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+}
+
+/* ── Edit button in entity panel ─────────────────────── */
+.entity-panel__edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 10px;
+  background: var(--surface, rgba(0, 0, 0, 0.02));
+  color: var(--accent, #6390ff);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.entity-panel__edit-btn:active {
+  transform: scale(0.92);
+  background: var(--surface-hover, rgba(99, 144, 255, 0.1));
+}

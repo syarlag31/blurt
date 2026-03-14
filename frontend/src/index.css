@@ -1,4 +1,6 @@
 /* ===== Blurt — Mobile-first base styles ===== */
+/* Design system: ui-ux-pro-max with Inter font */
+/* Inter loaded via <link> in index.html (with preconnect) for best performance */
 
 :root {
   --bg: #fafafa;
@@ -17,24 +19,13 @@
   --radius-sm: 8px;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1117;
-    --bg-surface: #1a1b23;
-    --text: #d1d5db;
-    --text-secondary: #9ca3af;
-    --text-heading: #f9fafb;
-    --border: #2d2f3a;
-    --accent: #818cf8;
-    --accent-light: rgba(129, 140, 248, 0.15);
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-}
+/* Dark mode variables are defined in theme-dark.css with premium
+   blue-tinted deep surfaces and proper elevation hierarchy.
+   Light mode refinements are in styles/theme-light.css. */
 
 *,
 *::before,
@@ -80,4 +71,107 @@ button {
 
 textarea {
   font-family: inherit;
+}
+
+/* ===== AppShell Layout ===== */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-shell__nav {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+  flex-shrink: 0;
+}
+
+.app-shell__nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  min-height: 56px;
+  min-width: 44px;
+  padding: 8px 4px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.app-shell__nav-item--active {
+  color: var(--accent);
+}
+
+.app-shell__nav-label {
+  line-height: 1;
+}
+
+/* ===== Placeholder Pages ===== */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 16px;
+}
+
+.page__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 40vh;
+  text-align: center;
+  gap: 8px;
+}
+
+.page__placeholder-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+}
+
+.page__placeholder-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 280px;
+}
+
+/* ── Chat page layout — feed fills space, input bar pinned bottom ── */
+.page--chat-layout {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.page--chat__feed {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }

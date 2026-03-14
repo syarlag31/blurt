@@ -1,0 +1,259 @@
+/* ===================================================================
+ * ActivityHeatmap — Weekly activity heatmap hero visual.
+ *
+ * 7x24 SVG grid with color-coded intensity cells, premium dark theme
+ * styling, smooth hover/tap micro-interactions, and loading skeleton.
+ * =================================================================== */
+
+.activity-heatmap {
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 12px);
+  margin: 0 16px 16px;
+}
+
+/* ── Header ───────────────────────────────────────────────────────── */
+.activity-heatmap__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.activity-heatmap__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity-heatmap__icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.activity-heatmap__title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-heading, var(--text));
+  letter-spacing: 0.01em;
+}
+
+.activity-heatmap__meta {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.activity-heatmap__total {
+  opacity: 0.8;
+}
+
+.activity-heatmap__retry {
+  padding: 4px 10px;
+  min-height: 28px;
+  background: var(--accent);
+  color: var(--accent-text, #fff);
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.activity-heatmap__retry:active {
+  opacity: 0.8;
+}
+
+/* ── Chart container ──────────────────────────────────────────────── */
+.activity-heatmap__chart {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.activity-heatmap__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Labels ───────────────────────────────────────────────────────── */
+.activity-heatmap__day-label,
+.activity-heatmap__hour-label {
+  font-size: 7px;
+  font-family: var(--sans);
+  font-weight: 500;
+  fill: var(--text-secondary);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── Cells — light mode palette (indigo scale) ────────────────────── */
+.activity-heatmap__cell {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+  transform-origin: center;
+  will-change: opacity;
+}
+
+/* Level 0: empty */
+.activity-heatmap__cell--l0 {
+  fill: var(--heatmap-l0, rgba(0, 0, 0, 0.04));
+}
+
+/* Level 1: low */
+.activity-heatmap__cell--l1 {
+  fill: var(--heatmap-l1, #c7d2fe);
+}
+
+/* Level 2: medium */
+.activity-heatmap__cell--l2 {
+  fill: var(--heatmap-l2, #818cf8);
+}
+
+/* Level 3: high */
+.activity-heatmap__cell--l3 {
+  fill: var(--heatmap-l3, #6366f1);
+}
+
+/* Level 4: max */
+.activity-heatmap__cell--l4 {
+  fill: var(--heatmap-l4, #4338ca);
+}
+
+/* ── Hover / tap micro-interaction ────────────────────────────────── */
+.activity-heatmap__cell:hover,
+.activity-heatmap__cell:focus-visible {
+  opacity: 0.85;
+  filter: brightness(1.15);
+  outline: none;
+}
+
+/* Subtle scale-up on hover (SVG transform via CSS) */
+@media (hover: hover) {
+  .activity-heatmap__cell:hover {
+    stroke: var(--accent, #6366f1);
+    stroke-width: 1;
+    stroke-opacity: 0.6;
+  }
+}
+
+/* Active press state */
+.activity-heatmap__cell:active {
+  opacity: 0.7;
+}
+
+/* ── Tooltip ──────────────────────────────────────────────────────── */
+.activity-heatmap__tooltip {
+  position: fixed;
+  left: var(--tt-x, 0);
+  top: var(--tt-y, 0);
+  transform: translate(-50%, -100%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-surface-top, #222b42);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  font-size: 0.6875rem;
+  font-family: var(--sans);
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  animation: heatmap-tooltip-in 0.15s ease-out;
+}
+
+@keyframes heatmap-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -90%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+
+.activity-heatmap__tooltip-day {
+  font-weight: 600;
+  color: var(--text-heading, var(--text));
+}
+
+.activity-heatmap__tooltip-hour {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.activity-heatmap__tooltip-value {
+  color: var(--text-secondary);
+}
+
+/* ── Legend ────────────────────────────────────────────────────────── */
+.activity-heatmap__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.activity-heatmap__legend-label {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 0 2px;
+  user-select: none;
+}
+
+.activity-heatmap__legend-cell {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* Legend uses same cell level classes for consistent colors */
+
+/* ── Loading skeleton ─────────────────────────────────────────────── */
+.activity-heatmap--loading .activity-heatmap__header {
+  margin-bottom: 12px;
+}
+
+.activity-heatmap__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activity-heatmap__skeleton-row {
+  height: 12px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-alt, rgba(0, 0, 0, 0.04)) 25%,
+    var(--bg-hover, rgba(0, 0, 0, 0.06)) 50%,
+    var(--bg-surface-alt, rgba(0, 0, 0, 0.04)) 75%
+  );
+  background-size: 200% 100%;
+  animation: heatmap-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes heatmap-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Stagger skeleton rows */
+.activity-heatmap__skeleton-row:nth-child(2) { animation-delay: 0.1s; }
+.activity-heatmap__skeleton-row:nth-child(3) { animation-delay: 0.2s; }
+.activity-heatmap__skeleton-row:nth-child(4) { animation-delay: 0.3s; }
+.activity-heatmap__skeleton-row:nth-child(5) { animation-delay: 0.4s; }
+.activity-heatmap__skeleton-row:nth-child(6) { animation-delay: 0.5s; }
+.activity-heatmap__skeleton-row:nth-child(7) { animation-delay: 0.6s; }

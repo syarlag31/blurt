@@ -1,0 +1,173 @@
+/* ── EventCard — Calendar event detection card ───────────────── */
+
+.event-card {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2, #f4f5f7);
+  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.06));
+  /* Subtle purple left accent for EVENT intent */
+  border-left: 3px solid #8b5cf6;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.event-card--synced {
+  border-left-color: var(--success, #10b981);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+
+.event-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.event-card__icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+}
+
+.event-card__title-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 28px;
+}
+
+.event-card__title {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+  font-size: 13.5px;
+}
+
+.event-card__source-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary, #999);
+  background: var(--surface-3, rgba(0, 0, 0, 0.04));
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Detail rows ───────────────────────────────────────────── */
+
+.event-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.event-card__detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary, #666);
+}
+
+.event-card__detail-icon {
+  flex-shrink: 0;
+  color: var(--text-tertiary, #999);
+}
+
+.event-card__detail-text {
+  font-size: 12.5px;
+}
+
+.event-card__duration {
+  color: var(--text-tertiary, #999);
+}
+
+/* ── Action row ────────────────────────────────────────────── */
+
+.event-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.04));
+}
+
+.event-card__sync-btn,
+.event-card__connect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 32px;
+  /* 44px touch target via padding */
+  min-width: 44px;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.event-card__sync-btn {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.event-card__sync-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.event-card__sync-btn:disabled {
+  cursor: default;
+}
+
+.event-card__sync-btn--synced {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success, #10b981);
+}
+
+.event-card__sync-btn--failed {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger, #ef4444);
+}
+
+.event-card__connect-btn {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent, #6366f1);
+}
+
+.event-card__connect-btn:active {
+  transform: scale(0.97);
+}
+
+/* Spinning loader */
+.event-card__spin {
+  animation: event-card-spin 0.8s linear infinite;
+}
+
+@keyframes event-card-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Confidence badge */
+.event-card__confidence {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary, #999);
+  opacity: 0.7;
+}

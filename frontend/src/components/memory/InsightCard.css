@@ -1,0 +1,378 @@
+/* ===== InsightCard — Dismissable / confirmable pattern card ===== */
+
+.insight-card {
+  position: relative;
+  background: var(--surface-elevated, var(--bg-surface));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  overflow: hidden;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease,
+    box-shadow 0.2s ease;
+  will-change: transform, opacity;
+}
+
+.insight-card:active {
+  transform: scale(0.985);
+}
+
+/* ── Exit animation ─────────────────────────────────────────────── */
+.insight-card--exiting {
+  animation: insight-exit 0.32s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+@keyframes insight-exit {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    max-height: 400px;
+    margin-bottom: 12px;
+  }
+  50% {
+    transform: translateX(80px) scale(0.95);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(120px) scale(0.9);
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+  }
+}
+
+/* ── Confirmation flash ─────────────────────────────────────────── */
+.insight-card--confirmed {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+}
+
+.insight-card__confirm-flash {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.08);
+  color: #10b981;
+  pointer-events: none;
+  animation: confirm-flash 1.8s ease-out forwards;
+  border-radius: inherit;
+}
+
+@keyframes confirm-flash {
+  0% { opacity: 0.8; }
+  30% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.insight-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.insight-card__type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--badge-color);
+  background: color-mix(in srgb, var(--badge-color) 12%, transparent);
+}
+
+.insight-card__time {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Description ────────────────────────────────────────────────── */
+.insight-card__description {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text, var(--text-primary));
+  word-break: break-word;
+}
+
+/* ── Meta: confidence + evidence ────────────────────────────────── */
+.insight-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.insight-card__confidence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.insight-card__confidence-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.insight-card__confidence-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+  min-width: 48px;
+}
+
+.insight-card__confidence-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--bar-color, var(--accent));
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.insight-card__confidence-value {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text, var(--text-primary));
+  min-width: 32px;
+  text-align: right;
+}
+
+.insight-card__evidence-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Expand button ──────────────────────────────────────────────── */
+.insight-card__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.insight-card__expand-btn:active {
+  opacity: 0.7;
+}
+
+/* ── Details section ────────────────────────────────────────────── */
+.insight-card__details {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--bg-surface-alt, rgba(128, 128, 128, 0.04));
+  border-radius: 10px;
+}
+
+.insight-card__params {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.insight-card__param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.insight-card__param-key {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+
+.insight-card__param-val {
+  color: var(--text, var(--text-primary));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  word-break: break-word;
+}
+
+.insight-card__evidence {
+  margin-top: 10px;
+}
+
+.insight-card__evidence-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.insight-card__evidence-list {
+  margin: 0;
+  padding: 0 0 0 16px;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.insight-card__evidence-item {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+/* ── Action buttons ─────────────────────────────────────────────── */
+.insight-card__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.insight-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.insight-card__action:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.insight-card__action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Dismiss button */
+.insight-card__action--dismiss {
+  color: var(--text-secondary);
+}
+
+.insight-card__action--dismiss:active:not(:disabled) {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* Confirm button */
+.insight-card__action--confirm {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.insight-card__action--confirm:active:not(:disabled) {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+/* Confirmed state */
+.insight-card--confirmed .insight-card__action--confirm {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+/* ── Swipe gesture surface ─────────────────────────────────────── */
+.insight-card__swipe-surface {
+  position: relative;
+  z-index: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+  touch-action: pan-y;
+}
+
+/* ── Swipe direction hint indicators ───────────────────────────── */
+.insight-card__swipe-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.insight-card__swipe-hint--dismiss {
+  justify-content: flex-end;
+  padding-right: 20px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.insight-card__swipe-hint--confirm {
+  justify-content: flex-start;
+  padding-left: 20px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+/* Swiping state border hints */
+.insight-card--swiping-dismiss {
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.insight-card--swiping-confirm {
+  border-color: rgba(16, 185, 129, 0.25);
+}

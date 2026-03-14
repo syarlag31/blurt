@@ -1,0 +1,499 @@
+/* ===== TimelineView — Reverse-chronological episode list ===== */
+/* Premium card design with intent/emotion/entity badges */
+
+/* ── Container ─────────────────────────────────────────────── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 24px;
+}
+
+/* ── Loading / Error states ────────────────────────────────── */
+.timeline__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 40vh;
+  color: var(--text-secondary);
+}
+
+.timeline__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: timeline-spin 0.7s linear infinite;
+}
+
+@keyframes timeline-spin {
+  to { transform: rotate(360deg); }
+}
+
+.timeline__loading-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.timeline__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 20vh;
+  text-align: center;
+  padding: 24px;
+}
+
+.timeline__error-icon {
+  color: var(--danger);
+  opacity: 0.7;
+}
+
+.timeline__error-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.timeline__retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.timeline__retry-btn:active {
+  transform: scale(0.96);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* ── Day group ─────────────────────────────────────────────── */
+.timeline__day-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeline__day-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timeline__day-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Episode card ──────────────────────────────────────────── */
+.episode-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  will-change: transform;
+  animation: episode-fade-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes episode-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.episode-card:active {
+  transform: scale(0.995);
+}
+
+/* ── Card header ───────────────────────────────────────────── */
+.episode-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.episode-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.episode-card__time {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Card body text ────────────────────────────────────────── */
+.episode-card__text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-heading);
+  line-height: 1.5;
+  /* Clamp to 3 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Card footer — entities + modality ─────────────────────── */
+.episode-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.episode-card__entities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.episode-card__modality {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted, var(--text-secondary));
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.episode-card__modality svg {
+  opacity: 0.6;
+}
+
+/* ── Intent badge (inline style via IntentBadge component) ─── */
+.intent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--intent-color);
+  background: var(--intent-bg);
+}
+
+.intent-badge__icon {
+  flex-shrink: 0;
+}
+
+/* ── Emotion badge ─────────────────────────────────────────── */
+.emotion-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--emotion-color);
+  background: var(--emotion-bg);
+}
+
+.emotion-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--emotion-color);
+  flex-shrink: 0;
+}
+
+/* ── Entity chip ───────────────────────────────────────────── */
+.entity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.entity-chip__type {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+}
+
+/* ── Compressed summary card variant ───────────────────────── */
+.episode-card--summary {
+  border-left: 3px solid var(--accent-secondary, var(--accent));
+  background: var(--bg-surface-alt, var(--bg-surface));
+}
+
+.episode-card__summary-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent-secondary, var(--accent));
+}
+
+.episode-card__summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.episode-card__summary-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Load more ─────────────────────────────────────────────── */
+.timeline__load-more {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.timeline__load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 120px;
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.timeline__load-more-btn:active {
+  transform: scale(0.96);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.timeline__load-more-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── Count indicator ───────────────────────────────────────── */
+.timeline__count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 4px 0 8px;
+}
+
+.timeline__count svg {
+  color: var(--accent);
+}
+
+/* ── Search bar ────────────────────────────────────────────── */
+.timeline-search {
+  margin-bottom: 12px;
+}
+
+.timeline-search__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.timeline-search__icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.timeline-search__input {
+  width: 100%;
+  height: 44px;
+  padding: 0 40px 0 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text);
+  font-size: 15px;
+  font-family: var(--sans);
+  font-weight: 400;
+  outline: none;
+  -webkit-appearance: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.timeline-search__input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.timeline-search__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.timeline-search__clear {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.timeline-search__clear:active {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ── Search meta info ──────────────────────────────────────── */
+.timeline-search__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 4px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.timeline-search__meta-count {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.timeline-search__meta-latency {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+.timeline-search__meta-entities {
+  font-style: italic;
+}
+
+/* ── Relevance badge (search results) ──────────────────────── */
+.timeline-relevance {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.timeline-relevance--high {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success);
+}
+
+.timeline-relevance--mid {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--warning);
+}
+
+.timeline-relevance--low {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
+}
+
+/* ── Search result card variant ────────────────────────────── */
+.episode-card--search {
+  border-left: 3px solid var(--accent);
+}
+
+.episode-card__source-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: capitalize;
+}
+
+.episode-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

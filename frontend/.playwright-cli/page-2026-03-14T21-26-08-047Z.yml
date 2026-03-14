@@ -1,0 +1,67 @@
+- generic [ref=e3]:
+  - main [ref=e4]:
+    - generic [ref=e51]:
+      - heading "Memory" [level=1] [ref=e53]
+      - tablist "Memory sub-views" [ref=e55]:
+        - tab "Timeline" [selected] [ref=e56] [cursor=pointer]:
+          - img [ref=e57]
+          - generic [ref=e60]: Timeline
+        - tab "Patterns" [ref=e61] [cursor=pointer]:
+          - img [ref=e62]
+          - generic [ref=e65]: Patterns
+        - tab "Rhythms" [ref=e66] [cursor=pointer]:
+          - img [ref=e67]
+          - generic [ref=e69]: Rhythms
+        - tab "Graph" [ref=e70] [cursor=pointer]:
+          - img [ref=e71]
+          - generic [ref=e77]: Graph
+      - toolbar "Episode filters" [ref=e78]:
+        - img [ref=e80]
+        - generic [ref=e82]:
+          - button "Intent" [ref=e84] [cursor=pointer]:
+            - img [ref=e85]
+            - generic [ref=e89]: Intent
+            - img [ref=e90]
+          - button "Emotion" [ref=e93] [cursor=pointer]:
+            - img [ref=e94]
+            - generic [ref=e96]: Emotion
+            - img [ref=e97]
+          - button "Entity" [ref=e100] [cursor=pointer]:
+            - img [ref=e101]
+            - generic [ref=e104]: Entity
+            - img [ref=e105]
+          - button "Dates" [ref=e108] [cursor=pointer]:
+            - img [ref=e109]
+            - generic [ref=e111]: Dates
+            - img [ref=e112]
+      - tabpanel [ref=e115]:
+        - generic [ref=e117]:
+          - img
+          - searchbox "Search memories" [ref=e118]
+        - alert [ref=e119]:
+          - img [ref=e120]
+          - paragraph [ref=e122]: HTTP 502
+          - button "Retry" [ref=e123] [cursor=pointer]
+  - generic:
+    - dialog:
+      - heading [level=2]: Quick Capture
+      - textbox:
+        - /placeholder: What's on your mind?
+      - button [disabled]:
+        - img
+        - text: Blurt it
+  - button "Quick capture" [ref=e124] [cursor=pointer]:
+    - img [ref=e126]
+  - tablist "Main navigation" [ref=e21]:
+    - tab "Chat" [ref=e22] [cursor=pointer]:
+      - img [ref=e24]
+      - generic [ref=e26]: Chat
+    - tab "Memory" [active] [selected] [ref=e28] [cursor=pointer]:
+      - img [ref=e30]
+      - generic [ref=e38]: Memory
+    - tab "Tasks" [ref=e39] [cursor=pointer]:
+      - img [ref=e41]
+      - generic [ref=e44]: Tasks
+    - tab "Debug" [ref=e45] [cursor=pointer]:
+      - img [ref=e47]
+      - generic [ref=e49]: Debug

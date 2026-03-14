@@ -1,0 +1,222 @@
+/* ===== BottomTabBar — Premium bottom navigation ===== */
+/* Uses design system tokens from theme-dark.css / theme-light.css */
+
+.bottom-tab-bar {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  width: 100%;
+  flex-shrink: 0;
+  z-index: 50;
+
+  /* Glass-morphism surface — adapts via CSS tokens */
+  background: var(--glass-bg, var(--bg-surface, rgba(255, 255, 255, 0.95)));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+  /* Top border: subtle separator */
+  border-top: 1px solid var(--glass-border, var(--border, rgba(0, 0, 0, 0.06)));
+  box-shadow: 0 -4px 20px rgba(0, 8, 32, 0.08);
+
+  /* Safe area padding for notched devices */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-top: 2px;
+}
+
+/* ── Tab button ────────────────────────────────────────────────── */
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px 6px;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+
+  /* 44px minimum touch target */
+  min-height: 52px;
+  min-width: 64px;
+
+  /* Smooth transition for color changes */
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab-btn:active {
+  transform: scale(0.92);
+}
+
+/* Spring pop micro-interaction on tab switch */
+.tab-btn--pop {
+  animation: tab-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tab-pop {
+  0% {
+    transform: scale(0.88);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── Active glow (behind icon) ─────────────────────────────────── */
+
+.tab-btn__glow {
+  position: absolute;
+  top: 4px;
+  width: 40px;
+  height: 28px;
+  border-radius: 14px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(99, 102, 241, 0.25) 0%,
+    rgba(99, 102, 241, 0.08) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: glow-fade-in 0.3s ease-out;
+}
+
+@keyframes glow-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Icon ──────────────────────────────────────────────────────── */
+
+.tab-btn__icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  transition: color 0.2s ease;
+}
+
+.tab-btn__svg {
+  color: var(--text-muted, rgba(148, 163, 184, 0.6));
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+.tab-btn__svg--active {
+  color: var(--accent, #818cf8);
+  filter: drop-shadow(0 0 6px rgba(129, 140, 248, 0.4));
+}
+
+/* ── Label ─────────────────────────────────────────────────────── */
+
+.tab-btn__label {
+  font-family: var(--sans, 'Inter', -apple-system, sans-serif);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--text-muted, rgba(148, 163, 184, 0.6));
+  transition: color 0.2s ease, font-weight 0.2s ease;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-btn__label--active {
+  color: var(--accent, #818cf8);
+  font-weight: 600;
+}
+
+/* ── Active indicator pill ─────────────────────────────────────── */
+
+.tab-btn__indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent, #818cf8);
+  box-shadow: var(--accent-glow, 0 2px 8px rgba(129, 140, 248, 0.5));
+  animation: indicator-slide-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes indicator-slide-in {
+  from {
+    transform: translateX(-50%) scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* ===== Light mode refinements ===== */
+/* Tokens already adapt via CSS custom properties from the design system.
+   These overrides handle non-tokenized values (box-shadow, gradients). */
+
+@media (prefers-color-scheme: light) {
+  .bottom-tab-bar {
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .tab-btn__svg--active {
+    filter: drop-shadow(0 0 4px rgba(79, 106, 245, 0.25));
+  }
+
+  .tab-btn__indicator {
+    box-shadow: 0 2px 6px rgba(79, 106, 245, 0.3);
+  }
+
+  .tab-btn__glow {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(79, 106, 245, 0.12) 0%,
+      rgba(79, 106, 245, 0.04) 60%,
+      transparent 100%
+    );
+  }
+}
+
+/* ===== Dark mode enhancements ===== */
+
+@media (prefers-color-scheme: dark) {
+  .bottom-tab-bar {
+    box-shadow: 0 -4px 20px rgba(0, 8, 32, 0.35);
+  }
+
+  .tab-btn__svg--active {
+    filter: drop-shadow(0 0 6px rgba(99, 144, 255, 0.4));
+  }
+}
+
+/* ===== Accessibility: reduced motion ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-btn,
+  .tab-btn__glow,
+  .tab-btn__indicator {
+    animation: none;
+    transition: none;
+  }
+
+  .tab-btn:active {
+    transform: none;
+  }
+}

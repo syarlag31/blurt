@@ -1,0 +1,126 @@
+/* ===== SegmentedPills — Pill-style segmented control ===== */
+
+.seg-pills {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface-alt, #f1f5f9);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 2px;
+  margin: 0 16px;
+  overflow: hidden;
+}
+
+/* Sliding pill indicator (animated behind active button) */
+.seg-pills__indicator {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: calc(100% - 6px);
+  background: var(--bg-surface, #ffffff);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Individual segment button */
+.seg-pills__btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  min-height: 36px;
+  min-width: 44px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  white-space: nowrap;
+  /* Ensure 44px tap zone with pseudo-element */
+}
+
+.seg-pills__btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px -2px;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.seg-pills__btn--active {
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
+.seg-pills__btn:active:not(.seg-pills__btn--active) {
+  color: var(--text);
+}
+
+.seg-pills__label {
+  line-height: 1.2;
+}
+
+/* ── Light mode refinements ───────────────────────────────────── */
+.seg-pills {
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .seg-pills {
+    background: var(--bg-surface, #111827);
+    border-color: var(--border, rgba(148, 176, 215, 0.10));
+  }
+
+  .seg-pills__indicator {
+    background: var(--bg-surface-hi, #1c2438);
+    box-shadow: var(--shadow-xs, 0 1px 2px rgba(0, 8, 32, 0.40));
+    border: 1px solid var(--border, rgba(148, 176, 215, 0.10));
+  }
+
+  .seg-pills__btn {
+    color: var(--text-muted, #5a6a7e);
+  }
+
+  .seg-pills__btn--active {
+    color: var(--text-heading, #f1f5f9);
+  }
+
+  .seg-pills__btn:active:not(.seg-pills__btn--active) {
+    color: var(--text-secondary, #8494a7);
+  }
+}
+
+/* ── .dark class support ──────────────────────────────────────── */
+.dark .seg-pills {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
+
+.dark .seg-pills__indicator {
+  background: var(--bg-surface-hi);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border);
+}
+
+.dark .seg-pills__btn {
+  color: var(--text-muted);
+}
+
+.dark .seg-pills__btn--active {
+  color: var(--text-heading);
+}

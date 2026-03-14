@@ -1,0 +1,270 @@
+/* ===== CaptureSheet — Bottom sheet overlay for text + voice capture ===== */
+
+/* ── Backdrop ──────────────────────────────────────────────────────── */
+.capture-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+.capture-sheet-backdrop--visible {
+  opacity: 1;
+}
+
+/* ── Sheet container ───────────────────────────────────────────────── */
+.capture-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 910;
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--bg-surface);
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--shadow-xl, 0 -8px 30px rgba(0, 0, 0, 0.15));
+  padding-bottom: calc(var(--safe-bottom, 0px) + 12px);
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+  touch-action: none;
+}
+
+.capture-sheet--open {
+  transform: translateY(0);
+}
+
+.capture-sheet--dragging {
+  transition: none;
+}
+
+/* ── Drag handle ───────────────────────────────────────────────────── */
+.capture-sheet__handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0 4px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.capture-sheet__handle-bar {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--text-secondary);
+  opacity: 0.35;
+  transition: opacity 0.15s ease, width 0.15s ease;
+}
+
+.capture-sheet--dragging .capture-sheet__handle-bar {
+  opacity: 0.6;
+  width: 44px;
+}
+
+/* ── Body content ──────────────────────────────────────────────────── */
+.capture-sheet__body {
+  padding: 8px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Mode toggle row ───────────────────────────────────────────────── */
+.capture-sheet__mode-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.capture-sheet__mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1.5px solid var(--border);
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  flex: 1;
+}
+
+.capture-sheet__mode-btn--active {
+  color: var(--accent);
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.capture-sheet__mode-btn:active {
+  transform: scale(0.97);
+}
+
+.capture-sheet__mode-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Text input area ───────────────────────────────────────────────── */
+.capture-sheet__input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.capture-sheet__textarea {
+  flex: 1;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius, 12px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-appearance: none;
+}
+
+.capture-sheet__textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.capture-sheet__textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.capture-sheet__send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.capture-sheet__send-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.capture-sheet__send-btn:not(:disabled):active {
+  transform: scale(0.92);
+  background: var(--accent-pressed, var(--accent));
+}
+
+.capture-sheet__send-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* ── Voice capture area ────────────────────────────────────────────── */
+.capture-sheet__voice-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 12px;
+}
+
+.capture-sheet__voice-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  position: relative;
+}
+
+.capture-sheet__voice-btn:active {
+  transform: scale(0.95);
+}
+
+.capture-sheet__voice-btn--recording {
+  background: var(--danger);
+  animation: capture-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes capture-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(248, 113, 113, 0);
+  }
+}
+
+.capture-sheet__voice-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.capture-sheet__voice-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  min-height: 20px;
+}
+
+.capture-sheet__voice-label--recording {
+  color: var(--danger, #ef4444);
+}
+
+/* ── Waveform visualizer (recording state) ─────────────────────────── */
+.capture-sheet__waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 32px;
+}
+
+.capture-sheet__waveform-bar {
+  width: 3px;
+  border-radius: 1.5px;
+  background: var(--danger, #ef4444);
+  animation: waveform-dance 0.6s ease-in-out infinite;
+}
+
+.capture-sheet__waveform-bar:nth-child(1) { height: 12px; animation-delay: 0s; }
+.capture-sheet__waveform-bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+.capture-sheet__waveform-bar:nth-child(3) { height: 28px; animation-delay: 0.2s; }
+.capture-sheet__waveform-bar:nth-child(4) { height: 16px; animation-delay: 0.3s; }
+.capture-sheet__waveform-bar:nth-child(5) { height: 24px; animation-delay: 0.15s; }
+
+@keyframes waveform-dance {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}

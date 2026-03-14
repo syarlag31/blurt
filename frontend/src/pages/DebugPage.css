@@ -1,0 +1,44 @@
+/* ===================================================================
+ * DebugPage — Layout for the Debug tab.
+ *
+ * Scrollable vertical layout: header → stats → endpoint picker →
+ * request panel. Mobile-first with proper spacing and dark theme
+ * integration.
+ * =================================================================== */
+
+.debug-page {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Header ────────────────────────────────────────────────────────── */
+.debug-page__header {
+  padding: 20px 16px 12px;
+}
+
+.debug-page__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-heading);
+  line-height: 1.2;
+}
+
+.debug-page__subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────── */
+.debug-page__section {
+  padding: 0 16px 16px;
+}
+
+/* ── Spacing between stats and sections ────────────────────────────── */
+.debug-page .stats-dashboard {
+  margin-bottom: 16px;
+}

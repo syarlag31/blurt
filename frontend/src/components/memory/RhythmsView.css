@@ -1,0 +1,586 @@
+/* ===================================================================
+ * RhythmsView — Heatmap Hero + Detected Rhythms Cards
+ *
+ * Layout: Summary Bar → Heatmap Hero → Detected Rhythms → Insights
+ *
+ * Displays a 7×4 weekly energy heatmap and detected behavioral
+ * rhythms as premium cards with confidence indicators, trend
+ * direction, and expandable details.
+ * Follows the deep-surface dark theme design system.
+ * =================================================================== */
+
+/* ── Rhythms view root ────────────────────────────────────────── */
+.rhythms-view {
+  --rhythms-cell-empty: rgba(128, 128, 128, 0.06);
+  --rhythms-cell-radius: 8px;
+  --rhythms-card-radius: 14px;
+  gap: 16px;
+}
+
+/* ── Loading / Error states ─────────────────────────────────── */
+
+.rhythm-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+}
+
+.rhythm-loading__spinner {
+  animation: rhythm-spin 1.2s linear infinite;
+  color: var(--accent);
+}
+
+@keyframes rhythm-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.rhythm-loading__text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rhythm-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  color: var(--danger, #ef4444);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rhythm-error__retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  min-height: 44px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-elevated, var(--surface));
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.rhythm-error__retry:active {
+  background: var(--surface-hover, rgba(128, 128, 128, 0.08));
+  transform: scale(0.97);
+}
+
+/* ── Section headers ──────────────────────────────────────────── */
+
+.rhythms-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+.rhythms-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-heading, var(--text-primary));
+  margin: 0;
+  flex: 1;
+}
+
+.rhythms-section-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  background: var(--surface-hover, rgba(128, 128, 128, 0.1));
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+/* ── Summary chips bar ──────────────────────────────────────── */
+
+.rhythm-summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.rhythm-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--chip-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chip-color) 18%, transparent);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: transform 0.15s ease;
+}
+
+.rhythm-summary-chip:active {
+  transform: scale(0.96);
+}
+
+.rhythm-summary-chip__count {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--chip-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.rhythm-summary-chip__label {
+  white-space: nowrap;
+}
+
+/* ── Analysis meta line ─────────────────────────────────────── */
+
+.rhythm-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted, var(--text-secondary));
+}
+
+.rhythm-meta__dot {
+  opacity: 0.4;
+}
+
+/* ===== Heatmap Hero ===== */
+
+.rhythms-heatmap {
+  background: var(--surface-elevated, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--rhythms-card-radius, 14px);
+  padding: 16px;
+}
+
+/* ── Heatmap Grid ────────────────────────────────────────────── */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: 40px repeat(4, 1fr);
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.heatmap-corner {
+  /* Empty top-left corner spacer */
+}
+
+.heatmap-col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.heatmap-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  height: 44px;
+  min-height: 44px;
+}
+
+/* ── Heatmap Cells ───────────────────────────────────────────── */
+.heatmap-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  min-height: 44px;
+  border-radius: var(--rhythms-cell-radius, 8px);
+  background: var(--rhythms-cell-empty, rgba(128, 128, 128, 0.06));
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.heatmap-cell:active:not(.heatmap-cell--empty) {
+  transform: scale(0.93);
+}
+
+.heatmap-cell--empty {
+  opacity: 0.5;
+}
+
+.heatmap-cell--rhythm {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.heatmap-cell__obs {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.heatmap-cell__dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+  z-index: 1;
+}
+
+/* ── Heatmap Legend ──────────────────────────────────────────── */
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.heatmap-legend__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary, var(--text-secondary));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.heatmap-legend__gradient {
+  width: 100px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    rgba(99, 144, 255, 0.3),
+    rgba(99, 144, 255, 0.6),
+    rgba(251, 191, 36, 0.5),
+    rgba(251, 191, 36, 0.8),
+    rgba(16, 185, 129, 0.6),
+    rgba(16, 185, 129, 0.9)
+  );
+}
+
+/* ===== Detected Rhythms Section ===== */
+
+/* ── Card list ──────────────────────────────────────────────── */
+
+.rhythm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 16px;
+}
+
+/* ── Individual Rhythm Card ─────────────────────────────────── */
+
+.rhythm-card {
+  background: var(--bg-surface, var(--surface, #fff));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rhythm-card:active {
+  transform: scale(0.985);
+}
+
+/* ── Card header ────────────────────────────────────────────── */
+
+.rhythm-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.rhythm-card__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.rhythm-card__title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.rhythm-card__label {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.rhythm-card__when {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ── Trend indicator ────────────────────────────────────────── */
+
+.rhythm-trend {
+  flex-shrink: 0;
+}
+
+.rhythm-trend--up {
+  color: #34d399;
+}
+
+.rhythm-trend--down {
+  color: #f87171;
+}
+
+.rhythm-trend--stable {
+  color: var(--text-muted, var(--text-secondary));
+  opacity: 0.5;
+}
+
+/* ── Description ────────────────────────────────────────────── */
+
+.rhythm-card__description {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text, var(--text-primary));
+}
+
+/* ── Stats row ──────────────────────────────────────────────── */
+
+.rhythm-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.rhythm-card__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rhythm-card__stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, var(--text-secondary));
+}
+
+.rhythm-card__stat-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text, var(--text-primary));
+}
+
+.rhythm-card__stat-value--accent {
+  color: var(--accent, #6390ff);
+}
+
+/* ── Confidence bar ─────────────────────────────────────────── */
+
+.rhythm-confidence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rhythm-confidence__track {
+  width: 56px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border, rgba(128, 128, 128, 0.15));
+  overflow: hidden;
+}
+
+.rhythm-confidence__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rhythm-confidence__label {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text, var(--text-primary));
+}
+
+/* ── Expand / details toggle ────────────────────────────────── */
+
+.rhythm-card__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg-hover, rgba(128, 128, 128, 0.06));
+  color: var(--text-secondary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rhythm-card__expand-btn:hover,
+.rhythm-card__expand-btn:active {
+  background: var(--bg-active, rgba(128, 128, 128, 0.12));
+  color: var(--text, var(--text-primary));
+}
+
+/* ── Expanded details ───────────────────────────────────────── */
+
+.rhythm-card__details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle, var(--border));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: rhythm-detail-in 0.2s ease-out;
+}
+
+@keyframes rhythm-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rhythm-card__detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.rhythm-card__detail-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.rhythm-card__detail-value {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text, var(--text-primary));
+}
+
+.rhythm-card__detail-row--evidence .rhythm-card__detail-value {
+  color: var(--accent, #6390ff);
+}
+
+/* ── Recommendations section ────────────────────────────────── */
+
+.rhythm-recommendations {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: var(--bg-surface, var(--surface, #fff));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.rhythm-recommendations__title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading, var(--text-primary));
+}
+
+.rhythm-recommendations__item {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text, var(--text-primary));
+  padding-left: 12px;
+  position: relative;
+}
+
+.rhythm-recommendations__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent, #6390ff);
+}
+
+.rhythm-recommendations__item:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Inline refresh indicator ─────────────────────────────────── */
+
+.rhythm-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}

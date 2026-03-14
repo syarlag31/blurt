@@ -1,0 +1,113 @@
+goal: >
+  Rebuild the Blurt frontend as a comprehensive dogfooding UI that exposes ALL
+  backend functionality. 4-tab bottom nav (Chat, Memory, Tasks, Debug) with
+  persistent capture FAB, premium dark theme, and real-time data updates.
+  Mobile web only (phone browser). Replace the existing single-screen chat app
+  in frontend/ with a multi-view React app using React Router, gesture library,
+  and d3-force for graph visualization. Use the ui-ux-pro-max design system:
+  Inter font, micro-interactions, premium intentional dark mode.
+
+constraints:
+  - React 19 + Vite in frontend/ directory (replace existing single-screen app)
+  - JavaScript not TypeScript
+  - Add React Router for tab routing, @use-gesture/react for swipe, d3-force for graph
+  - Mobile web only, do not optimize for desktop
+  - Inter font from Google Fonts
+  - Premium dark theme with deep surfaces and blue tint, not lazy color inversion
+  - Light mode also polished with proper elevation and spacing
+  - No emojis as structural icons, use SVG icons (Lucide React)
+  - Touch targets minimum 44x44px
+  - Hardcoded single user_id
+  - All data fetched from existing backend REST endpoints (no new backend endpoints)
+  - Re-fetch active tab data when blurt.created arrives via WebSocket
+  - WebSocket connection shared across all tabs via context/provider
+  - Existing WebSocket protocol unchanged (session.init, text.input, audio.chunk, etc.)
+  - Vite proxy config for /ws and /api unchanged
+
+acceptance_criteria:
+  - Bottom tab bar with 4 tabs (Chat, Memory, Tasks, Debug) using React Router
+  - Chat tab shows text input and voice button with intent badge per message
+  - Chat messages expand on tap to show entities, emotion, confidence, full classification
+  - QUESTION intent responses show synthesized answer with tappable source references
+  - EVENT intent auto-syncs to Google Calendar with 5-second undo toast
+  - Memory tab has segmented pill control with 4 sub-views (Timeline, Patterns, Rhythms, Graph)
+  - Timeline sub-view shows reverse-chronological episodes with filter bar (intent, emotion, entity, date range) and semantic search
+  - Patterns sub-view shows dismissable/confirmable insight cards
+  - Rhythms sub-view shows weekly activity heatmap as hero visual with detected rhythms below
+  - Graph sub-view renders interactive force-directed entity graph with tap-to-explore and edit (merge, rename, delete)
+  - Tasks tab shows surfaced tasks with inline score breakdown (all signal scores, weights, reason, Thompson stats)
+  - Task cards support 3-direction swipe (right=engage, left=defer, up=done) feeding Thompson Sampling via feedback API
+  - Debug tab top section shows stats dashboard (classification health, capture counts, recall performance, Google Calendar status)
+  - Debug tab bottom section has collapsible curated endpoint picker organized by router with form fields and JSON response viewer
+  - Persistent FAB on all non-Chat tabs opens bottom sheet overlay for text/voice capture
+  - Blurts captured from any tab appear in Chat feed
+  - All tabs re-fetch data when blurt.created event received from WebSocket
+  - Dark theme uses deep surfaces with subtle blue tint, proper elevation levels, accent colors that pop
+  - Light theme uses clean whites with subtle shadows and clear hierarchy
+  - Inter font loaded from Google Fonts with proper weight scale (400, 500, 600, 700)
+  - Micro-interaction animations (150-300ms) on tab switches, card expansions, swipe gestures
+  - All touch targets at least 44x44px with proper spacing
+
+ontology_schema:
+  name: BlurtFullFrontend
+  description: >
+    Comprehensive dogfooding frontend for Blurt with 4-tab navigation,
+    full backend feature coverage, premium theming, and real-time updates
+  fields:
+    - name: tab_view
+      type: object
+      description: A top-level tab (Chat, Memory, Tasks, Debug) with its own route and content
+    - name: sub_view
+      type: object
+      description: A sub-view within a tab (Timeline, Patterns, Rhythms, Graph under Memory)
+    - name: component
+      type: object
+      description: React component (chat message, task card, entity node, filter bar, etc.)
+    - name: gesture
+      type: object
+      description: Touch gesture binding (swipe direction, threshold, feedback animation)
+    - name: theme_token
+      type: string
+      description: CSS custom property for theming (surface color, elevation, accent)
+
+evaluation_principles:
+  - name: feature_coverage
+    description: Every backend endpoint is reachable from the UI (all 50+ endpoints across 12 routers)
+    weight: 1.0
+  - name: mobile_ux
+    description: Touch-friendly, responsive on phone browser, 44px+ targets, proper safe areas
+    weight: 0.9
+  - name: visual_quality
+    description: Premium dark theme, Inter font, micro-interactions, no lazy color inversion
+    weight: 0.8
+  - name: real_time_feel
+    description: Data refreshes on blurt.created, no manual refresh needed, smooth transitions
+    weight: 0.7
+  - name: gesture_polish
+    description: Swipe gestures feel natural with spring physics, visual feedback, and clear affordances
+    weight: 0.7
+
+exit_conditions:
+  - name: all_tabs_functional
+    description: All 4 tabs render and fetch data from the backend
+    criteria: Chat, Memory (all 4 sub-views), Tasks, and Debug all load and display real data
+  - name: capture_from_any_tab
+    description: FAB works on non-Chat tabs and blurts appear in Chat feed
+    criteria: Tap FAB on Memory tab, type a blurt, see it in Chat feed with classification
+  - name: task_swipe_works
+    description: 3-direction swipe on task cards feeds Thompson Sampling
+    criteria: Swipe right/left/up on a task card, verify feedback API called
+  - name: graph_interactive
+    description: Entity graph renders with d3-force and supports tap + edit
+    criteria: Nodes and edges render, tap a node to see details, can rename an entity
+  - name: theme_polished
+    description: Dark and light themes both look intentional and premium
+    criteria: No lazy color inversion, proper elevation, accent colors pop, Inter font renders
+
+metadata:
+  version: 1.0.0
+  timestamp: 2026-03-14
+  ambiguity_score: 0.08
+  source: socratic_interview
+  interview_session: interview_20260314_200135
+  design_system: ui-ux-pro-max (Inter, micro-interactions, #2563EB primary)

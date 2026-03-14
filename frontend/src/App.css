@@ -454,9 +454,73 @@
   border-left: 3px solid var(--text-secondary);
 }
 
+/* --- Intent badge --- */
+.intent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  padding: 2px 7px 2px 5px;
+  border-radius: 6px;
+  background: var(--intent-bg, rgba(99, 102, 241, 0.1));
+  color: var(--intent-color, var(--accent));
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.intent-badge__icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.intent-badge__label {
+  line-height: 1;
+}
+
+/* User bubble: intent badge uses white-on-accent styling */
+.chat-bubble--user .intent-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* --- Chat bubble header (badges row) --- */
+.chat-bubble__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+  min-height: 0;
+}
+
+.chat-bubble__header:empty {
+  display: none;
+  margin-bottom: 0;
+}
+
 .chat-bubble__voice-badge {
-  font-size: 12px;
-  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+}
+
+.chat-bubble--server .chat-bubble__voice-badge {
+  background: var(--accent-light, rgba(99, 102, 241, 0.1));
+  color: var(--accent, #6366f1);
+}
+
+.chat-bubble__voice-badge--recording {
+  animation: recording-pulse 1.5s ease-in-out infinite;
 }
 
 .chat-bubble__text {

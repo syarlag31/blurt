@@ -1,0 +1,256 @@
+/* ===================================================================
+ * ChatMessage — Expandable message component
+ *
+ * Tap-to-expand micro-interactions:
+ * - Collapsed: clean message text only, minimal chrome
+ * - Expanded: reveals timestamps, intent badges, voice indicator,
+ *   metadata card with smooth CSS transitions
+ *
+ * Design: ui-ux-pro-max with spring-like easing curves
+ * =================================================================== */
+
+/* ── Expand hint chevron ────────────────────────────────────────── */
+.chat-bubble__expand-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.chat-bubble:active .chat-bubble__expand-hint {
+  opacity: 0.6;
+}
+
+.chat-bubble--server .chat-bubble__expand-hint {
+  right: auto;
+  left: 8px;
+}
+
+/* ── Bubble tap interaction ─────────────────────────────────────── */
+.chat-bubble {
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    background-color 0.15s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: text;
+  position: relative;
+}
+
+.chat-bubble:active {
+  transform: scale(0.98);
+}
+
+.chat-bubble--expanded {
+  transform: scale(1);
+}
+
+.chat-bubble--expanded:active {
+  transform: scale(0.99);
+}
+
+/* ── Header badges row — collapsed/expanded transition ──────────── */
+.chat-bubble__header {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+  transition:
+    max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease,
+    margin-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-bubble__header--visible {
+  max-height: 32px;
+  opacity: 1;
+  margin-bottom: 6px;
+  transition:
+    max-height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease 0.05s,
+    margin-bottom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Footer (timestamp) — collapsed/expanded transition ─────────── */
+.chat-bubble__footer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  transition:
+    max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease,
+    margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-bubble__footer--visible {
+  max-height: 24px;
+  opacity: 1;
+  margin-top: 4px;
+  transition:
+    max-height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease 0.08s,
+    margin-top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Metadata panel — collapsed/expanded transition ─────────────── */
+.chat-msg__metadata {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-4px);
+  transition:
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-msg__metadata--visible {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.35s ease 0.1s,
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Ack bubble — expanded state subtle elevation ──────────────── */
+.chat-msg__ack--expanded {
+  margin-top: 6px;
+}
+
+/* ── Expanded message group — subtle visual container ──────────── */
+.chat-msg--expanded {
+  gap: 6px;
+}
+
+/* ── Expanded bubble glow/elevation — premium feel ─────────────── */
+.chat-bubble--expanded.chat-bubble--user {
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.15);
+}
+
+.chat-bubble--expanded.chat-bubble--server {
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+/* ── Badge entry animation when expanding ──────────────────────── */
+.chat-bubble__header--visible .intent-badge,
+.chat-bubble__header--visible .chat-bubble__voice-badge {
+  animation: badge-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes badge-pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Timestamp slide-in when expanding ─────────────────────────── */
+.chat-bubble__footer--visible .chat-bubble__time {
+  animation: time-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.05s;
+}
+
+@keyframes time-slide-in {
+  from {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+}
+
+/* ── Hide the old static expand hint when expanded ─────────────── */
+.chat-bubble--expanded .chat-bubble__expand-hint {
+  display: none;
+}
+
+/* ── Dark mode enhancements ────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .chat-bubble--expanded.chat-bubble--user {
+    box-shadow: 0 2px 16px rgba(99, 144, 255, 0.20),
+                0 0 24px rgba(99, 144, 255, 0.08);
+  }
+
+  .chat-bubble--expanded.chat-bubble--server {
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 8, 32, 0.40));
+    border-color: var(--border-strong, rgba(148, 176, 215, 0.18));
+  }
+
+  .chat-bubble__expand-hint {
+    opacity: 0.25;
+  }
+
+  .chat-bubble:active .chat-bubble__expand-hint {
+    opacity: 0.5;
+  }
+}
+
+/* Also support explicit .dark class */
+.dark .chat-bubble--expanded.chat-bubble--user {
+  box-shadow: 0 2px 16px rgba(99, 144, 255, 0.20),
+              0 0 24px rgba(99, 144, 255, 0.08);
+}
+
+.dark .chat-bubble--expanded.chat-bubble--server {
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 8, 32, 0.40));
+  border-color: var(--border-strong, rgba(148, 176, 215, 0.18));
+}
+
+/* ── Question answer card container ──────────────────────────────── */
+.chat-msg__answer-card {
+  margin-top: 6px;
+  animation: qa-card-enter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes qa-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Reduced motion — disable animations for accessibility ─────── */
+@media (prefers-reduced-motion: reduce) {
+  .chat-bubble,
+  .chat-bubble__header,
+  .chat-bubble__footer,
+  .chat-msg__metadata {
+    transition-duration: 0.01ms !important;
+  }
+
+  .chat-bubble__header--visible .intent-badge,
+  .chat-bubble__header--visible .chat-bubble__voice-badge,
+  .chat-bubble__footer--visible .chat-bubble__time {
+    animation: none !important;
+  }
+
+  .chat-bubble:active {
+    transform: none;
+  }
+
+  .chat-msg__answer-card {
+    animation: none;
+  }
+}

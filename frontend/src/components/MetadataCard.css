@@ -1,0 +1,351 @@
+/* ===================================================================
+ * MetadataCard — Expanded detail panel
+ *
+ * Premium styling with entity chips, emotion indicators,
+ * confidence bars, and classification score breakdowns.
+ * =================================================================== */
+
+/* ── Base card ──────────────────────────────────────────────────── */
+.mc {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  touch-action: manipulation;
+}
+
+.mc--expanded {
+  border-color: var(--border-strong, var(--border));
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+/* ── Summary row ────────────────────────────────────────────────── */
+.mc__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 28px;
+}
+
+/* Intent label chip */
+.mc__intent {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--intent-color, var(--accent));
+  background: color-mix(in srgb, var(--intent-color, var(--accent)) 12%, transparent);
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Expand chevron */
+.mc__chevron {
+  margin-left: auto;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* ── Confidence bar ──────────────────────────────────────────────── */
+.mc-confidence {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.mc-confidence__track {
+  width: 48px;
+  height: 4px;
+  background: var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mc-confidence__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mc-confidence__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 28px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Emotion indicator ───────────────────────────────────────────── */
+.mc-emotion {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--emotion-color, var(--text-secondary));
+  text-transform: capitalize;
+}
+
+.mc-emotion__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--emotion-color, var(--text-secondary)) 14%, transparent);
+  color: var(--emotion-color, var(--text-secondary));
+  flex-shrink: 0;
+}
+
+.mc-emotion__label {
+  line-height: 1;
+}
+
+.mc-emotion__intensity {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ── Entity chips ────────────────────────────────────────────────── */
+.mc__entities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mc-entity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px 3px 7px;
+  background: var(--accent-light, rgba(99, 102, 241, 0.1));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1.2;
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-entity-chip__icon {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.mc-entity-chip__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Expanded details ────────────────────────────────────────────── */
+.mc__details {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Section blocks ──────────────────────────────────────────────── */
+.mc__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mc__section--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.mc__section-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Emotion detail (valence/arousal) ────────────────────────────── */
+.mc__emotion-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mc__emotion-metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.mc__emotion-metric-label {
+  color: var(--text-secondary);
+  min-width: 52px;
+  font-weight: 500;
+}
+
+.mc__emotion-metric-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mc__emotion-metric-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.mc__emotion-metric-fill--valence {
+  background: var(--accent-secondary, #a78bfa);
+}
+
+.mc__emotion-metric-fill--arousal {
+  background: var(--warning, #f59e0b);
+  left: 0;
+}
+
+.mc__emotion-metric-center {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 6px;
+  background: var(--text-secondary);
+  opacity: 0.4;
+}
+
+.mc__emotion-metric-value {
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Score bars (classification breakdown) ────────────────────────── */
+.mc__scores {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mc-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.mc-score-bar__label {
+  min-width: 64px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-score-bar--top .mc-score-bar__label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.mc-score-bar__track {
+  flex: 1;
+  height: 6px;
+  background: var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mc-score-bar__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--text-secondary);
+  opacity: 0.5;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mc-score-bar--top .mc-score-bar__fill {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.mc-score-bar__value {
+  min-width: 28px;
+  text-align: right;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-score-bar--top .mc-score-bar__value {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Transcript ──────────────────────────────────────────────────── */
+.mc__transcript {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg, #fafafa);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+}
+
+/* ── Latency & raw data ──────────────────────────────────────────── */
+.mc__latency-label,
+.mc__raw-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.mc__latency-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.mc__raw-value {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  background: var(--bg, #fafafa);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  color: var(--accent);
+}

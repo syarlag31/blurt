@@ -1,0 +1,234 @@
+/* ===== EndpointPicker — Collapsible API endpoint browser ===== */
+
+/* ── Container ── */
+.ep-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* ── Header bar ── */
+.ep-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ep-picker__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ep-picker__icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.ep-picker__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.ep-picker__badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 2px 7px;
+  border-radius: 10px;
+  line-height: 1.2;
+}
+
+.ep-picker__toggle-all {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  min-height: 32px;
+  transition: background 0.15s ease;
+}
+
+.ep-picker__toggle-all:active {
+  background: var(--accent-light);
+}
+
+/* ── Selected endpoint indicator ── */
+.ep-picker__selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.ep-picker__selected-method {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--method-color);
+  background: color-mix(in srgb, var(--method-color) 12%, transparent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.ep-picker__selected-label {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* ── Sections container ── */
+.ep-picker__sections {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Single accordion section ── */
+.ep-section {
+  border-bottom: 1px solid var(--border);
+}
+
+.ep-section:last-child {
+  border-bottom: none;
+}
+
+/* Section header / toggle */
+.ep-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 48px;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.ep-section__header:active {
+  background: var(--accent-light);
+}
+
+.ep-section__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ep-section__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ep-section__count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--text-secondary) 10%, transparent);
+  padding: 1px 6px;
+  border-radius: 8px;
+  line-height: 1.3;
+}
+
+/* Chevron with rotation transition */
+.ep-section__chevron {
+  color: var(--text-secondary);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.ep-section__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Collapsible body — animated height via grid trick */
+.ep-section__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ep-section--open .ep-section__body {
+  grid-template-rows: 1fr;
+}
+
+.ep-section__list {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Individual endpoint row ── */
+.ep-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 28px;
+  min-height: 48px;
+  width: 100%;
+  text-align: left;
+  transition: background 0.12s ease;
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+.ep-row:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.ep-row:active {
+  background: var(--accent-light);
+}
+
+/* HTTP method badge */
+.ep-row__method {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--method-color);
+  background: color-mix(in srgb, var(--method-color) 12%, transparent);
+  padding: 3px 7px;
+  border-radius: 4px;
+  line-height: 1;
+  min-width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Endpoint info */
+.ep-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ep-row__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ep-row__path {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,355 @@
+/* ===== FilterBar — Episode filter controls ===== */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 12px;
+  flex-shrink: 0;
+}
+
+/* ── Leading filter icon with badge ───────────────────────── */
+.filter-bar__icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.filter-bar__icon {
+  color: var(--text-secondary);
+}
+
+.filter-bar__badge {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── Scrollable chip row ──────────────────────────────────── */
+.filter-bar__chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px 0;
+}
+
+.filter-bar__chips::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Chip wrapper (relative for dropdown positioning) ─────── */
+.filter-chip-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── Filter chip button ───────────────────────────────────── */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  min-height: 44px; /* touch target */
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.filter-chip:active {
+  transform: scale(0.96);
+}
+
+/* Active chip state — uses accent color or chip-specific accent */
+.filter-chip--active {
+  border-color: var(--chip-accent, var(--accent));
+  background: color-mix(in srgb, var(--chip-accent, var(--accent)) 12%, var(--surface-raised));
+  color: var(--chip-accent, var(--accent));
+}
+
+.filter-chip--active .filter-chip__icon {
+  color: var(--chip-accent, var(--accent));
+}
+
+/* Clear chip */
+.filter-chip--clear {
+  border-color: var(--border);
+  color: var(--text-tertiary);
+  background: transparent;
+}
+
+.filter-chip--clear:active {
+  background: var(--surface-raised);
+}
+
+/* Chip icon */
+.filter-chip__icon {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  transition: color 0.15s ease;
+}
+
+/* Chip label */
+.filter-chip__label {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Chip dropdown arrow */
+.filter-chip__arrow {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+}
+
+.filter-chip__arrow--open {
+  transform: rotate(180deg);
+}
+
+/* ===== Dropdowns ===== */
+
+.filter-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  min-width: 180px;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.18),
+    0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  animation: filterDropdownIn 0.15s ease;
+}
+
+@keyframes filterDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Dropdown item ────────────────────────────────────────── */
+.filter-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-dropdown__item:active,
+.filter-dropdown__item:hover {
+  background: var(--surface-hover, rgba(255, 255, 255, 0.04));
+}
+
+.filter-dropdown__item--active {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.filter-dropdown__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filter-dropdown__label {
+  flex: 1;
+  text-align: left;
+}
+
+.filter-dropdown__check {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Entity text input popover ────────────────────────────── */
+.filter-dropdown--entity {
+  min-width: 220px;
+  padding: 10px;
+}
+
+.filter-entity-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-entity-input {
+  flex: 1;
+  height: 40px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.filter-entity-input:focus {
+  border-color: var(--accent);
+}
+
+.filter-entity-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.filter-entity-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Date range popover ───────────────────────────────────── */
+.filter-dropdown--dates {
+  min-width: 240px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-date-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-date-input {
+  height: 40px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+  -webkit-appearance: none;
+  color-scheme: dark;
+}
+
+.filter-date-input:focus {
+  border-color: var(--accent);
+}
+
+.filter-date-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.filter-date-clear,
+.filter-date-apply {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.1s ease;
+}
+
+.filter-date-clear {
+  background: none;
+  color: var(--text-secondary);
+}
+
+.filter-date-clear:active {
+  background: var(--surface-hover, rgba(255, 255, 255, 0.04));
+}
+
+.filter-date-apply {
+  background: var(--accent);
+  color: #fff;
+}
+
+.filter-date-apply:active {
+  opacity: 0.85;
+}
+
+/* ===== Light theme adjustments ===== */
+@media (prefers-color-scheme: light) {
+  .filter-dropdown {
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .filter-date-input {
+    color-scheme: light;
+  }
+}

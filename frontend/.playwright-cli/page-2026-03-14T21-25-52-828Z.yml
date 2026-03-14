@@ -1,0 +1,28 @@
+- generic [ref=e3]:
+  - main [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e9]:
+        - paragraph [ref=e10]: 💭
+        - paragraph [ref=e11]: Just blurt it out.
+        - paragraph [ref=e12]: Tap the mic or type below
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - textbox "Type a blurt" [disabled] [ref=e15]:
+            - /placeholder: Just blurt it out...
+          - button "Send message" [disabled]:
+            - img
+        - button "Start voice input" [disabled] [ref=e16]:
+          - img [ref=e18]
+  - tablist "Main navigation" [ref=e21]:
+    - tab "Chat" [selected] [ref=e22] [cursor=pointer]:
+      - img [ref=e24]
+      - generic [ref=e26]: Chat
+    - tab "Memory" [ref=e28] [cursor=pointer]:
+      - img [ref=e30]
+      - generic [ref=e38]: Memory
+    - tab "Tasks" [ref=e39] [cursor=pointer]:
+      - img [ref=e41]
+      - generic [ref=e44]: Tasks
+    - tab "Debug" [ref=e45] [cursor=pointer]:
+      - img [ref=e47]
+      - generic [ref=e49]: Debug

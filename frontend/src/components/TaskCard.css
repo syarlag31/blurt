@@ -1,0 +1,543 @@
+/* ===== TaskCard — Premium dark/light theme card ===== */
+/* Follows ui-ux-pro-max design system: Inter font, micro-interactions,
+   deep surface hierarchy, 44px+ touch targets */
+
+/* ── Base card ──────────────────────────────────────────────────────── */
+.task-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  will-change: transform;
+}
+
+.task-card:active {
+  transform: scale(0.995);
+}
+
+.task-card--expanded {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--accent-light);
+}
+
+.task-card--nudge {
+  animation: task-nudge 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  border-color: var(--accent);
+}
+
+@keyframes task-nudge {
+  0% { transform: scale(1); box-shadow: var(--shadow-sm); }
+  30% { transform: scale(1.015); box-shadow: var(--shadow-md), 0 0 0 3px var(--accent-light); }
+  100% { transform: scale(1); box-shadow: var(--shadow-sm); }
+}
+
+.task-card--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  padding: 24px 16px;
+}
+
+.task-card__empty-text {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ── Header row ─────────────────────────────────────────────────────── */
+.task-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.task-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-card__intent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.task-card__intent svg {
+  flex-shrink: 0;
+}
+
+.task-card__status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.task-card__status--active {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success);
+}
+
+.task-card__status--deferred {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--warning);
+}
+
+.task-card__status--completed {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent);
+}
+
+.task-card__status--dropped {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+}
+
+.task-card__score {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Content ────────────────────────────────────────────────────────── */
+.task-card__content {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-heading);
+  line-height: 1.45;
+}
+
+.task-card__reason {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ── Context tags ───────────────────────────────────────────────────── */
+.task-card__context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.task-card__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.task-card__tag--project {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+/* ── Due date ───────────────────────────────────────────────────────── */
+.task-card__due {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── Action buttons ─────────────────────────────────────────────────── */
+.task-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.task-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.task-card__btn:active {
+  transform: scale(0.96);
+}
+
+.task-card__btn--complete {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.task-card__btn--complete:active {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.task-card__btn--defer {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.task-card__btn--defer:active {
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.task-card__btn--drop {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
+}
+
+.task-card__btn--drop:active {
+  background: rgba(239, 68, 68, 0.16);
+}
+
+/* ── Expand toggle ──────────────────────────────────────────────────── */
+.task-card__expand-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.task-card__expand-toggle:active {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.task-card--expanded .task-card__expand-toggle {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* ── Details section (expandable) ───────────────────────────────────── */
+.task-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+/* ── Section titles ─────────────────────────────────────────────────── */
+.task-card__section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.task-card__subsection-title {
+  margin: 8px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Signal scores ──────────────────────────────────────────────────── */
+.task-card__signals {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-card__signal-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.task-card__signal-row:last-child {
+  border-bottom: none;
+}
+
+.task-card__signal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-card__signal-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.task-card__signal-name svg {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.task-card__signal-weight {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  background: var(--accent-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ── Score bar ──────────────────────────────────────────────────────── */
+.task-card__score-bar {
+  position: relative;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.task-card__score-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--accent);
+}
+
+.task-card__score-bar-label {
+  position: absolute;
+  right: 0;
+  top: -16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-card__signal-reason {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  padding-left: 20px;
+}
+
+/* ── Thompson stats grid ────────────────────────────────────────────── */
+.task-card__thompson {
+  padding-top: 4px;
+}
+
+.task-card__stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.task-card__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.task-card__stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-card__stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Weights list ───────────────────────────────────────────────────── */
+.task-card__weights {
+  margin-top: 4px;
+}
+
+.task-card__weights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-card__weight-item {
+  display: grid;
+  grid-template-columns: 1fr 80px 40px;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-card__weight-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-card__weight-bar-wrap {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.task-card__weight-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.task-card__weight-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Swipe Gesture System ============================================ */
+
+/* ── Swipe container ─────────────────────────────────────────────────── */
+.task-card-swipe-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+
+/* ── Swipe overlay (revealed behind card during swipe) ─────────────── */
+.task-card-swipe-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Position the icon/label based on swipe direction */
+.task-card-swipe-overlay--right {
+  justify-content: flex-start;
+  padding-left: 24px;
+}
+
+.task-card-swipe-overlay--left {
+  justify-content: flex-end;
+  padding-right: 24px;
+}
+
+.task-card-swipe-overlay--up {
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 24px;
+}
+
+.task-card-swipe-overlay__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.15s ease;
+}
+
+.task-card-swipe-overlay__label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Icon pulse when threshold is passed */
+.task-card-swipe-icon--triggered {
+  animation: swipe-icon-pulse 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes swipe-icon-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ── Card states during swipe ──────────────────────────────────────── */
+.task-card--swiping {
+  box-shadow: var(--shadow-lg);
+  cursor: grabbing;
+  user-select: none;
+}
+
+.task-card--swiping-triggered {
+  box-shadow: var(--shadow-lg);
+  user-select: none;
+  opacity: 0.85;
+}
+
+/* Card inside swipe container needs relative z-index */
+.task-card-swipe-container > .task-card {
+  position: relative;
+  z-index: 1;
+  touch-action: pan-y;
+}

@@ -1,0 +1,57 @@
+/* ===================================================================
+ * Expandable Section — Smooth height + opacity transitions
+ *
+ * Uses CSS grid-template-rows trick for buttery-smooth height
+ * animation without JavaScript measurement. Works across all
+ * expandable card components (InsightCard, TaskCard, MetadataCard).
+ *
+ * Duration: 220ms (within the 150-300ms range)
+ * Easing: ease-out for expand, ease-in for collapse
+ * =================================================================== */
+
+/* ── Base: collapsed state ─────────────────────────────────────────── */
+.expandable-section {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 220ms cubic-bezier(0.2, 0, 0.38, 0.9),
+    opacity 180ms cubic-bezier(0.2, 0, 0.38, 0.9);
+  will-change: grid-template-rows, opacity;
+}
+
+/* ── Expanded state ────────────────────────────────────────────────── */
+.expandable-section--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 40ms;
+}
+
+/* ── Inner content wrapper — MUST be the direct child ──────────────── */
+.expandable-section__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Subtle slide-up effect on expand ──────────────────────────────── */
+.expandable-section__content {
+  transform: translateY(-4px);
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expandable-section--open .expandable-section__content {
+  transform: translateY(0);
+}
+
+/* ── Chevron rotation (reusable) ───────────────────────────────────── */
+.expandable-chevron {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expandable-chevron--open {
+  transform: rotate(180deg);
+}

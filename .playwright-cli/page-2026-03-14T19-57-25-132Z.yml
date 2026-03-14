@@ -1,0 +1,38 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "Blurt" [level=1] [ref=e5]
+    - generic "Connected" [ref=e28]:
+      - generic [ref=e8]: Connected
+  - paragraph [ref=e11]: No tasks right now. Enjoy the moment.
+  - main [ref=e12]:
+    - list "Chat messages" [ref=e29]:
+      - listitem [ref=e30]:
+        - generic [ref=e31]:
+          - paragraph [ref=e32]: remind me to call mom tonight
+          - generic [ref=e33]: 03:57 PM
+      - listitem [ref=e34]:
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: remind me to call mom tonight
+          - generic [ref=e37]: 03:57 PM
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - paragraph [ref=e40]: Captured.
+            - generic [ref=e41]: 03:57 PM
+          - button "🔔 Reminder 95% mom anticipation" [ref=e42] [cursor=pointer]:
+            - generic [ref=e43]:
+              - generic [ref=e44]: 🔔 Reminder
+              - generic [ref=e45]: 95%
+              - generic [ref=e46]: mom
+              - generic [ref=e47]: anticipation
+      - listitem [ref=e48]:
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: I'll remind you.
+          - generic [ref=e51]: 03:57 PM
+  - contentinfo [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - textbox "Type a blurt" [ref=e21]:
+          - /placeholder: Just blurt it out...
+        - button "Send" [disabled] [ref=e22] [cursor=pointer]: ↑
+      - button "Start recording" [ref=e23] [cursor=pointer]:
+        - img [ref=e25]

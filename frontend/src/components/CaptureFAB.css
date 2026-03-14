@@ -1,0 +1,381 @@
+/* ===== CaptureFAB — Persistent floating action button for quick capture ===== */
+/* Premium ui-ux-pro-max design: micro-interactions, scale+glow animations */
+/* Positioned fixed bottom-right, above the bottom tab bar */
+
+/* ── FAB button ─────────────────────────────────────────────────── */
+
+.capture-fab {
+  position: fixed;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  right: 20px;
+  z-index: 100;
+
+  /* 56px circle — well above 44px touch target */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+
+  /* Accent gradient */
+  background: linear-gradient(135deg, var(--accent, #6366f1), #818cf8);
+  color: #ffffff;
+  box-shadow:
+    0 4px 16px rgba(99, 102, 241, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Transition for open/close rotation + scale micro-interactions */
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+
+  /* Entrance animation */
+  animation: fab-enter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.capture-fab:active {
+  transform: scale(0.9);
+}
+
+/* Hover glow (pointer devices only) */
+@media (hover: hover) {
+  .capture-fab:hover {
+    transform: scale(1.06);
+    box-shadow:
+      0 6px 24px rgba(99, 102, 241, 0.45),
+      0 0 0 3px rgba(99, 102, 241, 0.12);
+  }
+}
+
+/* ── Open state — rotates + to x, accent shifts to danger ───────── */
+
+.capture-fab--open {
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  box-shadow:
+    0 4px 16px rgba(239, 68, 68, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.capture-fab--open:active {
+  transform: rotate(45deg) scale(0.9);
+}
+
+/* ── Entrance animation ─────────────────────────────────────────── */
+
+@keyframes fab-enter {
+  from {
+    opacity: 0;
+    transform: scale(0) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Pulse ring — subtle ambient attention indicator ────────────── */
+
+.capture-fab__pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  animation: fab-pulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fab-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+.capture-fab--open .capture-fab__pulse {
+  display: none;
+}
+
+/* ── Icon container ─────────────────────────────────────────────── */
+
+.capture-fab__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Icon springs on press for tactile feel */
+.capture-fab:active .capture-fab__icon {
+  transform: rotate(-6deg);
+}
+
+/* ── Bottom sheet overlay ───────────────────────────────────────── */
+
+.capture-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.capture-overlay--visible {
+  pointer-events: auto;
+}
+
+/* Backdrop scrim */
+.capture-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.capture-overlay--visible .capture-overlay__backdrop {
+  opacity: 1;
+}
+
+/* Sheet panel */
+.capture-overlay__sheet {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-surface, #ffffff);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px calc(80px + env(safe-area-inset-bottom, 0px)) 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /* Slide up */
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.capture-overlay--visible .capture-overlay__sheet {
+  transform: translateY(0);
+}
+
+/* Drag handle */
+.capture-overlay__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border, #e5e7eb);
+  margin: 0 auto 16px;
+  opacity: 0.6;
+}
+
+/* Sheet title */
+.capture-overlay__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-heading, #111827);
+  margin: 0 0 16px;
+  letter-spacing: -0.3px;
+}
+
+/* Quick capture text input */
+.capture-overlay__input {
+  width: 100%;
+  min-height: 88px;
+  border-radius: var(--radius, 12px);
+  border: 1px solid var(--border, #e5e7eb);
+  background: var(--bg, #fafafa);
+  color: var(--text, #374151);
+  font-family: var(--sans, 'Inter', sans-serif);
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 12px 16px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.capture-overlay__input::placeholder {
+  color: var(--text-secondary, #6b7280);
+}
+
+.capture-overlay__input:focus {
+  border-color: var(--accent, #6366f1);
+  box-shadow: 0 0 0 3px var(--accent-light, rgba(99, 102, 241, 0.1));
+}
+
+/* Submit button */
+.capture-overlay__submit {
+  width: 100%;
+  height: 48px;
+  margin-top: 12px;
+  border-radius: var(--radius, 12px);
+  border: none;
+  background: var(--accent, #6366f1);
+  color: #ffffff;
+  font-family: var(--sans, 'Inter', sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.2s ease, transform 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.capture-overlay__submit:active {
+  transform: scale(0.97);
+}
+
+.capture-overlay__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Dark mode refinements (prefers-color-scheme) ─────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .capture-fab {
+    background: linear-gradient(135deg, var(--accent, #6390ff), #7da3ff);
+    box-shadow:
+      0 4px 20px rgba(99, 144, 255, 0.35),
+      0 0 24px rgba(99, 144, 255, 0.15),
+      0 2px 8px rgba(0, 8, 32, 0.3);
+  }
+
+  .capture-fab:active {
+    box-shadow:
+      0 2px 10px rgba(99, 144, 255, 0.25),
+      0 0 12px rgba(99, 144, 255, 0.1);
+  }
+
+  @media (hover: hover) {
+    .capture-fab:hover {
+      background: linear-gradient(135deg, var(--accent-hover, #7da3ff), #93b5ff);
+      box-shadow:
+        0 6px 28px rgba(99, 144, 255, 0.45),
+        0 0 32px rgba(99, 144, 255, 0.2),
+        0 0 0 3px rgba(99, 144, 255, 0.15);
+    }
+  }
+
+  .capture-fab__pulse {
+    border-color: rgba(99, 144, 255, 0.35);
+  }
+
+  .capture-fab--open {
+    background: linear-gradient(135deg, var(--danger, #f87171), #fb9191);
+    box-shadow:
+      0 4px 20px rgba(248, 113, 113, 0.3),
+      0 0 20px rgba(248, 113, 113, 0.12),
+      0 2px 8px rgba(0, 8, 32, 0.3);
+  }
+
+  .capture-overlay__backdrop {
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  .capture-overlay__sheet {
+    background: var(--bg-surface-alt, #161d2f);
+    border-top: 1px solid var(--glass-border, rgba(148, 176, 215, 0.12));
+    box-shadow: 0 -8px 40px rgba(0, 8, 32, 0.5);
+  }
+
+  .capture-overlay__handle {
+    background: var(--border-strong, rgba(148, 176, 215, 0.18));
+  }
+
+  .capture-overlay__input {
+    background: var(--bg, #0a0e1a);
+    border-color: var(--border, rgba(148, 176, 215, 0.10));
+    box-shadow: inset 0 1px 3px rgba(0, 8, 32, 0.25);
+  }
+
+  .capture-overlay__input:focus {
+    border-color: var(--accent, #6390ff);
+    box-shadow:
+      inset 0 1px 3px rgba(0, 8, 32, 0.25),
+      0 0 0 3px rgba(99, 144, 255, 0.12);
+  }
+
+  .capture-overlay__submit {
+    background: var(--accent, #6390ff);
+    box-shadow: 0 0 12px rgba(99, 144, 255, 0.2);
+  }
+
+  .capture-overlay__submit:active {
+    background: var(--accent-pressed, #5580e6);
+  }
+}
+
+/* ── .dark class support (manual toggle) ──────────────────────── */
+
+.dark .capture-fab {
+  background: linear-gradient(135deg, var(--accent, #6390ff), #7da3ff);
+  box-shadow:
+    0 4px 20px rgba(99, 144, 255, 0.35),
+    0 0 24px rgba(99, 144, 255, 0.15),
+    0 2px 8px rgba(0, 8, 32, 0.3);
+}
+
+.dark .capture-fab--open {
+  background: linear-gradient(135deg, var(--danger, #f87171), #fb9191);
+  box-shadow:
+    0 4px 20px rgba(248, 113, 113, 0.3),
+    0 0 20px rgba(248, 113, 113, 0.12);
+}
+
+.dark .capture-overlay__sheet {
+  background: var(--bg-surface-alt, #161d2f);
+  border-top: 1px solid var(--glass-border, rgba(148, 176, 215, 0.12));
+}
+
+/* ── Light mode subtle refinements ────────────────────────────── */
+
+@media (prefers-color-scheme: light) {
+  .capture-fab {
+    box-shadow:
+      0 4px 14px rgba(99, 102, 241, 0.3),
+      0 2px 6px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(99, 102, 241, 0.06);
+  }
+
+  .capture-overlay__sheet {
+    box-shadow:
+      0 -4px 20px rgba(0, 0, 0, 0.08),
+      0 -1px 0 rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .capture-fab,
+  .capture-overlay__sheet,
+  .capture-overlay__backdrop {
+    transition: none;
+    animation: none;
+  }
+
+  .capture-fab__pulse {
+    display: none;
+  }
+}

@@ -1,0 +1,308 @@
+/* ===================================================================
+ * ChatInputBar — Premium input bar styles
+ *
+ * Mobile-first, dark-theme-aware input bar with send + voice buttons.
+ * Uses the blue-tinted dark surface system and proper elevation.
+ * All touch targets ≥ 44×44px for mobile accessibility.
+ * =================================================================== */
+
+/* ── Container ─────────────────────────────────────────────────────── */
+.chat-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + var(--safe-bottom));
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+/* ── Field wrapper (textarea + send) ───────────────────────────────── */
+.chat-input-bar__field-wrap {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  padding: 4px 4px 4px 16px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  min-height: 44px;
+}
+
+.chat-input-bar__field-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light, rgba(99, 102, 241, 0.1));
+}
+
+.chat-input-bar__field-wrap--recording {
+  border-color: var(--danger);
+  background: var(--danger-light, rgba(239, 68, 68, 0.05));
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+/* ── Textarea ──────────────────────────────────────────────────────── */
+.chat-input-bar__textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px; /* ≥16px prevents iOS auto-zoom */
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 8px 0;
+  resize: none;
+  outline: none;
+  max-height: 120px;
+  min-height: 24px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.chat-input-bar__textarea::placeholder {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.chat-input-bar__textarea:disabled {
+  opacity: 0.5;
+}
+
+/* ── Send button ───────────────────────────────────────────────────── */
+.chat-input-bar__send {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  /* Hidden by default, revealed when text is entered */
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  transition:
+    opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.15s ease;
+}
+
+.chat-input-bar__send--visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.chat-input-bar__send:active:not(:disabled) {
+  transform: scale(0.9);
+  background: var(--accent-pressed, #5555e0);
+}
+
+.chat-input-bar__send:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Voice button ──────────────────────────────────────────────────── */
+.chat-input-bar__voice {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.chat-input-bar__voice:active:not(:disabled):not(.chat-input-bar__voice--recording) {
+  transform: scale(0.92);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chat-input-bar__voice:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Recording state */
+.chat-input-bar__voice--recording {
+  border-color: var(--danger);
+  background: var(--danger-light, rgba(239, 68, 68, 0.1));
+  color: var(--danger);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.2);
+  animation: voice-btn-breathe 1.8s ease-in-out infinite;
+}
+
+.chat-input-bar__voice-icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+/* Recording pulse ring */
+.chat-input-bar__voice-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--danger);
+  animation: voice-ring-pulse 1.4s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ── Animations ────────────────────────────────────────────────────── */
+@keyframes voice-ring-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes voice-btn-breathe {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+  }
+}
+
+/* ── Dark mode refinements ─────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .chat-input-bar {
+    background: var(--bg-surface);
+    background-image: var(--elevation-2);
+    border-top-color: var(--border-subtle);
+  }
+
+  .chat-input-bar__field-wrap {
+    background: var(--bg);
+    border-color: var(--border);
+    box-shadow: inset 0 1px 3px rgba(0, 8, 32, 0.2);
+  }
+
+  .chat-input-bar__field-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow:
+      inset 0 1px 3px rgba(0, 8, 32, 0.2),
+      0 0 0 3px rgba(99, 144, 255, 0.12);
+  }
+
+  .chat-input-bar__field-wrap--recording {
+    border-color: var(--danger);
+    background: rgba(248, 113, 113, 0.06);
+    box-shadow:
+      inset 0 1px 3px rgba(0, 8, 32, 0.2),
+      0 0 0 3px rgba(248, 113, 113, 0.08);
+  }
+
+  .chat-input-bar__textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .chat-input-bar__send {
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(99, 144, 255, 0.25);
+  }
+
+  .chat-input-bar__send:active:not(:disabled) {
+    background: var(--accent-pressed);
+  }
+
+  .chat-input-bar__voice {
+    background: var(--bg-surface);
+    border-color: var(--border-strong);
+    color: var(--text-secondary);
+  }
+
+  .chat-input-bar__voice:active:not(:disabled):not(.chat-input-bar__voice--recording) {
+    border-color: var(--accent);
+    background: var(--accent-surface);
+    color: var(--accent);
+  }
+
+  .chat-input-bar__voice--recording {
+    border-color: var(--danger);
+    background: var(--danger-light);
+    color: var(--danger);
+    box-shadow: 0 0 16px rgba(248, 113, 113, 0.2);
+  }
+
+  .chat-input-bar__voice--recording .chat-input-bar__voice-icon {
+    filter: drop-shadow(0 0 4px rgba(248, 113, 113, 0.4));
+  }
+}
+
+/* Also support explicit .dark class */
+.dark .chat-input-bar {
+  background: var(--bg-surface);
+  background-image: var(--elevation-2);
+  border-top-color: var(--border-subtle);
+}
+
+.dark .chat-input-bar__field-wrap {
+  background: var(--bg);
+  border-color: var(--border);
+  box-shadow: inset 0 1px 3px rgba(0, 8, 32, 0.2);
+}
+
+.dark .chat-input-bar__field-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow:
+    inset 0 1px 3px rgba(0, 8, 32, 0.2),
+    0 0 0 3px rgba(99, 144, 255, 0.12);
+}
+
+.dark .chat-input-bar__send {
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(99, 144, 255, 0.25);
+}
+
+.dark .chat-input-bar__voice {
+  background: var(--bg-surface);
+  border-color: var(--border-strong);
+}
+
+.dark .chat-input-bar__voice--recording {
+  border-color: var(--danger);
+  background: var(--danger-light);
+  box-shadow: 0 0 16px rgba(248, 113, 113, 0.2);
+}

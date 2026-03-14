@@ -1,0 +1,19 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "Blurt" [level=1] [ref=e5]
+    - generic "Connecting..." [ref=e6]:
+      - generic [ref=e8]: Connecting...
+  - paragraph [ref=e11]: No tasks right now. Enjoy the moment.
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - paragraph [ref=e15]: 💭
+      - paragraph [ref=e16]: Just blurt it out.
+      - paragraph [ref=e17]: Tap the mic or type below
+  - contentinfo [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - textbox "Type a blurt" [ref=e21]:
+          - /placeholder: Just blurt it out...
+        - button "Send" [disabled] [ref=e22] [cursor=pointer]: ↑
+      - button "Start recording" [ref=e23] [cursor=pointer]:
+        - img [ref=e25]

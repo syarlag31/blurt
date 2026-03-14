@@ -1,0 +1,323 @@
+/* ===================================================================
+ * JsonViewer — Syntax-highlighted, collapsible JSON response viewer
+ *
+ * Premium dark mode styling with blue-tinted code surfaces.
+ * Uses monospace font for readability, color-coded value types.
+ * =================================================================== */
+
+.json-viewer {
+  position: relative;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  overflow: hidden;
+  font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ── Toolbar ───────────────────────────────────────────────────────── */
+.json-viewer__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.json-viewer__title {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.json-viewer__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.json-viewer__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  gap: 4px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.json-viewer__action-btn:active {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.json-viewer__action-btn--copied {
+  color: var(--success);
+}
+
+/* ── Content area ──────────────────────────────────────────────────── */
+.json-viewer__content {
+  padding: 12px;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 60vh;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Tree nodes ────────────────────────────────────────────────────── */
+.json-viewer__node {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.json-viewer__row {
+  display: flex;
+  align-items: flex-start;
+  padding: 1px 0;
+  gap: 0;
+  min-height: 22px;
+}
+
+.json-viewer__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 22px;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: transform 0.15s ease, color 0.1s ease;
+  border: none;
+  background: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.json-viewer__toggle:active {
+  color: var(--accent);
+}
+
+.json-viewer__toggle--collapsed {
+  transform: rotate(-90deg);
+}
+
+.json-viewer__toggle-spacer {
+  display: inline-block;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.json-viewer__indent {
+  display: inline-block;
+  width: 20px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  margin-left: 8px;
+}
+
+/* ── Key ───────────────────────────────────────────────────────────── */
+.json-viewer__key {
+  color: #93c5fd;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.json-viewer__colon {
+  color: var(--text-secondary);
+  margin-right: 6px;
+}
+
+/* ── Values — type-specific colors ─────────────────────────────────── */
+.json-viewer__value--string {
+  color: #86efac;
+  word-break: break-all;
+}
+
+.json-viewer__value--number {
+  color: #fbbf24;
+}
+
+.json-viewer__value--boolean {
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.json-viewer__value--null {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ── Brackets ──────────────────────────────────────────────────────── */
+.json-viewer__bracket {
+  color: var(--text-secondary);
+}
+
+.json-viewer__bracket--collapsed {
+  cursor: pointer;
+}
+
+.json-viewer__ellipsis {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 12px;
+  margin: 0 2px;
+}
+
+.json-viewer__item-count {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-style: italic;
+  margin-left: 6px;
+  font-family: var(--sans);
+}
+
+.json-viewer__comma {
+  color: var(--text-secondary);
+}
+
+/* ── Loading state ─────────────────────────────────────────────────── */
+.json-viewer__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  gap: 12px;
+}
+
+.json-viewer__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: json-viewer-spin 0.8s linear infinite;
+}
+
+@keyframes json-viewer-spin {
+  to { transform: rotate(360deg); }
+}
+
+.json-viewer__loading-text {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ── Error state ───────────────────────────────────────────────────── */
+.json-viewer__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  gap: 8px;
+  text-align: center;
+}
+
+.json-viewer__error-icon {
+  color: var(--danger);
+}
+
+.json-viewer__error-title {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--danger);
+  margin: 0;
+}
+
+.json-viewer__error-message {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 280px;
+  word-break: break-word;
+}
+
+.json-viewer__retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 20px;
+  margin-top: 4px;
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.json-viewer__retry-btn:active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* ── Empty state ───────────────────────────────────────────────────── */
+.json-viewer__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Light mode value overrides ────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  .json-viewer__key {
+    color: #2563eb;
+  }
+
+  .json-viewer__value--string {
+    color: #16a34a;
+  }
+
+  .json-viewer__value--number {
+    color: #d97706;
+  }
+
+  .json-viewer__value--boolean {
+    color: #9333ea;
+  }
+
+  .json-viewer__value--null {
+    color: #6b7280;
+  }
+}

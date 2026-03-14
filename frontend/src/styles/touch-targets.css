@@ -1,0 +1,230 @@
+/* ===== Touch Target Compliance ===== */
+/* Ensures ALL interactive elements meet the 44x44px minimum touch target.
+ * WCAG 2.5.5 (Enhanced) / Apple HIG / Material Design guidelines.
+ * Mobile-first: every tappable element gets min-width/min-height of 44px.
+ */
+
+/* ── Global interactive element baseline ──────────────────────────── */
+
+/* All buttons get a minimum 44px touch target */
+button,
+[role="button"],
+[role="tab"],
+a[href],
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ── Send button (text input) ─────────────────────────────────────── */
+/* Was 36x36, now 44x44 with proper visual size */
+.text-input__send {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+/* ── Audio playback stop button ───────────────────────────────────── */
+/* Was 28x28, now 44x44 with visual inner circle */
+.audio-playback-bar__stop {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ── Nudge toast close button ─────────────────────────────────────── */
+/* Was 32x32, now 44x44 */
+.nudge-toast__close {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px;
+}
+
+/* ── Chat "New messages" pill ─────────────────────────────────────── */
+/* Was 32px min-height, now 44px with better padding */
+.chat-feed__new-msg-pill {
+  min-height: 44px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Task card action buttons ─────────────────────────────────────── */
+/* Was 36px min-height, now 44px */
+.task-card__btn {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+/* ── Metadata card (expandable) ───────────────────────────────────── */
+/* Clickable card needs minimum tap target height */
+.metadata-card,
+.mc {
+  min-height: 44px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ── Voice button — already 52px, ensure min constraint ───────────── */
+.voice-btn {
+  min-width: 52px;
+  min-height: 52px;
+}
+
+/* ── Bottom tab bar items — already 52px, enforce minimum ─────────── */
+.tab-btn {
+  min-height: 52px;
+  min-width: 64px;
+}
+
+/* ── App shell nav items (fallback from index.css) ────────────────── */
+.app-shell__nav-item {
+  min-height: 56px;
+  min-width: 44px;
+}
+
+/* ── Connection status (if clickable) ─────────────────────────────── */
+.conn-status[role="button"],
+.conn-status[tabindex] {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px;
+}
+
+/* ── Proper spacing between adjacent touch targets ────────────────── */
+/* At least 8px gap between buttons to prevent mis-taps */
+
+.task-card__actions {
+  gap: 10px;
+}
+
+.app__input-row {
+  gap: 10px;
+}
+
+/* ── Textarea touch target (tappable area) ────────────────────────── */
+.text-input__field {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+/* ── Focus visible styles for keyboard/assistive tech ─────────────── */
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 8px);
+}
+
+/* ── Active state feedback for all touch targets ──────────────────── */
+/* Ensure visual feedback on press for mobile users */
+button:active:not(:disabled),
+[role="button"]:active {
+  opacity: 0.85;
+  transition: opacity 0.1s ease;
+}
+
+/* ── List items that may be interactive ───────────────────────────── */
+/* Generic clickable list rows (used in Memory, Tasks, Debug pages) */
+.list-item,
+.entity-row,
+.task-row,
+.debug-endpoint-btn {
+  min-height: 48px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Chip / tag interactive elements ──────────────────────────────── */
+/* Filter chips, status toggles, etc. — at least 36px with 44px tap zone */
+.filter-chip,
+.status-chip {
+  min-height: 36px;
+  padding: 8px 16px;
+  position: relative;
+}
+
+/* Expand tap zone for small chips via pseudo-element */
+.filter-chip::before,
+.status-chip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+}
+
+/* ── FAB (Floating Action Button) for capture ─────────────────────── */
+.capture-fab {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 50%;
+}
+
+/* ── Swipe handle / drag areas ────────────────────────────────────── */
+.swipe-handle {
+  min-height: 44px;
+  padding: 12px 0;
+}
+
+/* ── Generic close / dismiss buttons ──────────────────────────────── */
+.close-btn,
+.dismiss-btn,
+.back-btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ── Checkbox / toggle size enforcement ───────────────────────────── */
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 22px;
+  min-height: 22px;
+}
+
+/* Expand touch zone for checkboxes */
+label:has(input[type="checkbox"]),
+label:has(input[type="radio"]) {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+/* ── Select / dropdown ────────────────────────────────────────────── */
+select {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 16px; /* Prevents iOS zoom */
+}
+
+/* ── Search input ─────────────────────────────────────────────────── */
+input[type="search"],
+input[type="text"],
+input[type="url"],
+input[type="email"] {
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 16px; /* Prevents iOS zoom */
+}

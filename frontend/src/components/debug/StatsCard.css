@@ -1,0 +1,92 @@
+/* ── StatsCard ─────────────────────────────────────────────── */
+
+.stats-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 12px;
+  min-height: 110px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1),
+              box-shadow 0.15s ease,
+              background 0.15s ease;
+  /* Reset button styles */
+  font-family: var(--sans);
+  color: var(--text);
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.stats-card:active {
+  background: var(--bg-hover, rgba(99, 144, 255, 0.06));
+  box-shadow: none;
+}
+
+/* Status indicator dot — top-right corner */
+.stats-card__dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Pulsing animation for loading status */
+.stats-card[data-status="loading"] .stats-card__dot {
+  animation: stats-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes stats-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Icon */
+.stats-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+
+.stats-card__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Primary value — large and prominent */
+.stats-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Label — smaller, secondary text */
+.stats-card__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Optional subtitle / trend line */
+.stats-card__subtitle {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin-top: 2px;
+}

@@ -1,0 +1,148 @@
+/* ===================================================================
+ * SwipeableTaskCard — Swipe gesture wrapper for TaskCard
+ *
+ * Shows colored action indicators behind the card during swipe:
+ *   - Right swipe → blue "Engage"  (engage feedback)
+ *   - Left swipe  → amber "Defer"  (defer feedback)
+ *   - Up swipe    → green "Done"   (complete feedback)
+ *
+ * Uses spring physics for snap-back and smooth dismiss animation.
+ * =================================================================== */
+
+.swipeable-task-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius, 12px);
+  /* Height collapse after dismiss exit (250ms card + 50ms delay = starts at 300ms) */
+  transition: max-height 250ms cubic-bezier(0.32, 0.72, 0, 1) 100ms,
+              margin-bottom 250ms cubic-bezier(0.32, 0.72, 0, 1) 100ms,
+              opacity 200ms ease;
+  max-height: 800px;
+}
+
+.swipeable-task-card--dismissing {
+  max-height: 0;
+  margin-bottom: -12px !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── Action indicator background ────────────────────────────── */
+.swipeable-task-card__action-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius, 12px);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  z-index: 0;
+}
+
+/* Engage (right swipe) — blue */
+.swipeable-task-card__action-bg--engage {
+  background: rgba(59, 130, 246, 0.12);
+  justify-content: flex-start;
+  padding-left: 24px;
+}
+
+.swipeable-task-card__action-bg--ready.swipeable-task-card__action-bg--engage {
+  background: rgba(59, 130, 246, 0.22);
+}
+
+/* Defer (left swipe) — amber */
+.swipeable-task-card__action-bg--defer {
+  background: rgba(245, 158, 11, 0.12);
+  justify-content: flex-end;
+  padding-right: 24px;
+}
+
+.swipeable-task-card__action-bg--ready.swipeable-task-card__action-bg--defer {
+  background: rgba(245, 158, 11, 0.22);
+}
+
+/* Done (up swipe) — green */
+.swipeable-task-card__action-bg--done {
+  background: rgba(16, 185, 129, 0.12);
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 24px;
+}
+
+.swipeable-task-card__action-bg--ready.swipeable-task-card__action-bg--done {
+  background: rgba(16, 185, 129, 0.22);
+}
+
+/* ── Action label (icon + text) ─────────────────────────────── */
+.swipeable-task-card__action-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.swipeable-task-card__action-label--engage {
+  color: var(--accent, #3b82f6);
+}
+
+.swipeable-task-card__action-label--defer {
+  color: var(--warning, #f59e0b);
+}
+
+.swipeable-task-card__action-label--done {
+  color: var(--success, #10b981);
+}
+
+.swipeable-task-card__action-label svg {
+  transition: transform 0.15s ease;
+}
+
+/* ── Swipeable card surface ─────────────────────────────────── */
+.swipeable-task-card__surface {
+  position: relative;
+  z-index: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  will-change: transform;
+}
+
+.swipeable-task-card__surface:active {
+  cursor: grabbing;
+}
+
+/* Ensure task card inside has no extra margin */
+.swipeable-task-card__surface .task-card {
+  margin: 0;
+}
+
+/* ── Swipe affordance hint ──────────────────────────────────── */
+.swipeable-task-card::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--text-secondary, #888);
+  opacity: 0.2;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .swipeable-task-card {
+    transition-duration: 0.01ms;
+  }
+  .swipeable-task-card--dismissing {
+    transition-duration: 0.01ms;
+  }
+  .swipeable-task-card__surface {
+    transition: none !important;
+  }
+}

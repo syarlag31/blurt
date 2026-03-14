@@ -1,0 +1,108 @@
+/* ===================================================================
+ * Swipe Gesture Animations — Shared animation utilities
+ *
+ * Timing guidelines (150-300ms range):
+ *   - Snap-back spring:  200ms with overshoot easing
+ *   - Dismiss exit:      250ms fast ease-out
+ *   - Height collapse:   250ms after dismiss completes
+ *   - Icon scale:        150ms ease-out
+ *   - Opacity fade:      200ms ease
+ *
+ * Easing curves:
+ *   --ease-spring:     overshooting spring for snap-back
+ *   --ease-dismiss:    fast exit with momentum
+ *   --ease-bounce:     slight bounce for interactive feedback
+ * =================================================================== */
+
+:root {
+  /* Swipe animation easings */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-dismiss: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Swipe animation durations */
+  --duration-snap: 200ms;
+  --duration-dismiss: 250ms;
+  --duration-icon: 150ms;
+  --duration-fade: 200ms;
+  --duration-collapse: 250ms;
+}
+
+/* ── Swipe hint labels ─────────────────────────────────────────── */
+.swipe-action-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.swipe-action-indicator svg {
+  transition: transform var(--duration-icon) ease-out;
+}
+
+/* ── Swipeable surface shared styles ───────────────────────────── */
+.swipe-surface {
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.swipe-surface:active {
+  cursor: grabbing;
+}
+
+/* ── Height collapse animation for dismissed items ─────────────── */
+.swipe-collapse {
+  transition:
+    max-height var(--duration-collapse) var(--ease-dismiss) 100ms,
+    margin var(--duration-collapse) var(--ease-dismiss) 100ms,
+    padding var(--duration-collapse) var(--ease-dismiss) 100ms,
+    opacity var(--duration-fade) ease;
+  max-height: 800px;
+  overflow: hidden;
+}
+
+.swipe-collapse--dismissed {
+  max-height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Haptic-style pulse on threshold reached ───────────────────── */
+@keyframes swipe-threshold-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.swipe-threshold-reached {
+  animation: swipe-threshold-pulse 200ms var(--ease-bounce);
+}
+
+/* ── Reduced motion ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-snap: 1ms;
+    --duration-dismiss: 1ms;
+    --duration-icon: 1ms;
+    --duration-fade: 1ms;
+    --duration-collapse: 1ms;
+  }
+
+  .swipe-surface {
+    transition: none !important;
+  }
+
+  .swipe-collapse {
+    transition-duration: 1ms;
+  }
+}

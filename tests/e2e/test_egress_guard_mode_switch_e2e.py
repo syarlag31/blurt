@@ -23,7 +23,6 @@ from blurt.core.app import create_app
 from blurt.middleware.egress_guard import (
     EgressBlockedError,
     EgressGuard,
-    GuardedTransport,
     install_egress_guards,
 )
 

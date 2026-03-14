@@ -23,7 +23,6 @@ from blurt.memory.episodic import (
     EntityRef,
     Episode,
     EpisodeContext,
-    EpisodeSummary,
     InMemoryEpisodicStore,
 )
 from blurt.memory.semantic import SemanticMemoryStore
@@ -379,6 +378,7 @@ class TestSourceContextEnrichment:
         assert len(enriched) >= 1
 
         ctx = enriched[0].source_context
+        assert ctx is not None
         assert ctx.session_id == session_id
         assert ctx.session_episode_count == 3
 
@@ -478,7 +478,9 @@ class TestSourceContextEnrichment:
 
         enriched = [r for r in response.results if r.source_context is not None]
         if enriched:
-            all_entities = enriched[0].source_context.surrounding_entities
+            src_ctx = enriched[0].source_context
+            assert src_ctx is not None
+            all_entities = src_ctx.surrounding_entities
             assert "Sarah" in all_entities or "Alpha" in all_entities
 
 
@@ -599,6 +601,7 @@ class TestNLQueryRecallIntegration:
             time_start=now - timedelta(days=10),
         )
         # The explicit time should win
+        assert response.query_understanding is not None
         assert response.query_understanding.temporal_hint == "yesterday"
         # But the search should still work (explicit override)
         assert isinstance(response, RecallResponse)

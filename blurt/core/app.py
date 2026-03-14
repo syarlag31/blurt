@@ -12,11 +12,20 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 
+from blurt.audio.connection_registry import ConnectionRegistry
+from blurt.audio.pipeline import AudioPipeline
 from blurt.audio.session_manager import SessionManager
 from blurt.audio.websocket_handler import AudioWebSocketHandler
 from blurt.config.settings import BlurtConfig, DeploymentMode
+from blurt.gemini.audio_client import GeminiAudioClient
 from blurt.middleware.egress_guard import install_egress_guards
+from blurt.persistence.database import close_pool, create_pool, run_schema_migrations
+from blurt.persistence.pg_episodic_store import PgEpisodicStore
+from blurt.persistence.task_store import PgTaskStore
+from blurt.services.acknowledgment import AcknowledgmentService
+from blurt.services.task_nudge_scheduler import TaskNudgeScheduler
 
 logger = logging.getLogger(__name__)
 
@@ -45,11 +54,56 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     config: BlurtConfig = app.state.config
     ws_cfg = config.websocket
 
+    # Initialize asyncpg connection pool for Neon Postgres
+    db_pool = None
+    if config.database_url:
+        db_pool = await create_pool(config.database_url)
+        app.state.db_pool = db_pool
+        await run_schema_migrations(db_pool)
+        # Wire Postgres-backed episodic store into the episodes API
+        from blurt.api.episodes import set_store as set_episode_store
+        set_episode_store(PgEpisodicStore(db_pool))
+        logger.info("Database pool initialized and schema migrations applied")
+    else:
+        app.state.db_pool = None
+        logger.warning("DATABASE_URL not set — running without Postgres persistence")
+
     app.state.ws_config = ws_cfg
     app.state.session_manager = SessionManager(
         max_concurrent=ws_cfg.max_concurrent_sessions,
         max_audio_buffer_bytes=ws_cfg.max_audio_buffer_bytes,
     )
+
+    # Initialize Gemini audio pipeline if API key is available
+    gemini_client: GeminiAudioClient | None = None
+    audio_pipeline: AudioPipeline | None = None
+    if config.gemini.api_key:
+        gemini_client = GeminiAudioClient(config.gemini)
+        audio_pipeline = AudioPipeline(gemini_client)
+        logger.info("Gemini audio pipeline initialized (model=%s)", config.gemini.flash_lite_model)
+    else:
+        logger.warning("GEMINI_API_KEY not set — audio pipeline disabled, using placeholders")
+
+    app.state.gemini_client = gemini_client
+    app.state.audio_pipeline = audio_pipeline
+    app.state.ack_service = AcknowledgmentService()
+
+    # Track connected WebSocket handlers for server-push (task nudges)
+    app.state.connection_registry = ConnectionRegistry()
+    # Keep ws_handlers as alias for backward compatibility
+    app.state.ws_handlers = app.state.connection_registry
+
+    # Start task nudge scheduler if database is available
+    nudge_scheduler: TaskNudgeScheduler | None = None
+    if db_pool is not None:
+        task_store = PgTaskStore(db_pool)
+        nudge_scheduler = TaskNudgeScheduler(
+            registry=app.state.connection_registry,
+            task_store=task_store,
+        )
+        nudge_scheduler.start()
+        logger.info("Task nudge scheduler started")
+    app.state.nudge_scheduler = nudge_scheduler
 
     # Start idle session cleanup task
     app.state.cleanup_task = asyncio.create_task(
@@ -57,14 +111,21 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     )
 
     logger.info(
-        "Blurt backend started (mode=%s, ws_max_sessions=%d)",
+        "Blurt backend started (mode=%s, ws_max_sessions=%d, db=%s, pipeline=%s)",
         config.mode.value,
         ws_cfg.max_concurrent_sessions,
+        "connected" if db_pool else "none",
+        "active" if audio_pipeline else "disabled",
     )
 
     yield
 
     # Shutdown
+    # Stop nudge scheduler first
+    if hasattr(app.state, "nudge_scheduler") and app.state.nudge_scheduler is not None:
+        await app.state.nudge_scheduler.stop()
+        app.state.nudge_scheduler = None
+
     if hasattr(app.state, "cleanup_task") and app.state.cleanup_task:
         app.state.cleanup_task.cancel()
         try:
@@ -76,6 +137,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if hasattr(app.state, "session_manager"):
         for sid in list(app.state.session_manager.session_ids):
             await app.state.session_manager.end_session(sid)
+
+    # Close Gemini client
+    if hasattr(app.state, "gemini_client") and app.state.gemini_client is not None:
+        await app.state.gemini_client.close()
+        app.state.gemini_client = None
+
+    # Close asyncpg connection pool
+    if hasattr(app.state, "db_pool") and app.state.db_pool is not None:
+        await close_pool(app.state.db_pool)
+        app.state.db_pool = None
 
     logger.info("Blurt backend shutdown complete")
 
@@ -101,6 +172,21 @@ def create_app(config: BlurtConfig | None = None) -> FastAPI:
 
     # Store config on app state for lifespan access
     app.state.config = config
+
+    # CORS middleware — allow frontend dev and production origins
+    cors_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     # Install egress guards (activated in local-only mode)
     install_egress_guards(app, local_mode=config.mode == DeploymentMode.LOCAL)
@@ -172,5 +258,16 @@ def _register_routes(app: FastAPI) -> None:
             websocket=websocket,
             session_manager=session_manager,
             config=ws_config,
+            pipeline=getattr(app.state, "audio_pipeline", None),
+            ack_service=getattr(app.state, "ack_service", None),
         )
-        await handler.handle()
+
+        # Register for server-push (task nudges)
+        registry: ConnectionRegistry | None = getattr(app.state, "connection_registry", None)
+        if registry is not None:
+            registry.register(handler)
+        try:
+            await handler.handle()
+        finally:
+            if registry is not None:
+                registry.unregister(handler)

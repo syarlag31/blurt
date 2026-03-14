@@ -436,7 +436,7 @@ class TestEmotionAcrossContradictions:
             "Status update: the plan changed to 3pm",
             session_id="frustration-chain",
         )
-        r2 = await capture_blurt_via_api(
+        _r2 = await capture_blurt_via_api(
             "Frustrated update — the plan changed AGAIN to 4pm",
             session_id="frustration-chain",
         )

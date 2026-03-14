@@ -23,11 +23,9 @@ from fastapi import FastAPI
 from blurt.api.capture import router as capture_router, set_pipeline
 from blurt.api.episodes import router as episodes_router, set_store
 from blurt.api.patterns import (
-    router as patterns_router,
     set_pattern_service,
 )
 from blurt.api.task_feedback import (
-    router as feedback_router,
     set_feedback_service,
 )
 from blurt.config.settings import BlurtConfig, DeploymentMode
@@ -79,7 +77,7 @@ def _build_app(mode: DeploymentMode) -> tuple[FastAPI, dict[str, Any]]:
     feedback_service = TaskFeedbackService(store=feedback_store)
 
     # Ensure all routers are mounted
-    _registered_paths = {r.path for r in application.routes}
+    _registered_paths = {getattr(r, "path", None) for r in application.routes}
     if "/api/v1/blurt" not in _registered_paths:
         application.include_router(capture_router)
     if "/api/v1/episodes" not in _registered_paths:

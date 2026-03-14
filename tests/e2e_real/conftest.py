@@ -31,18 +31,18 @@ from dotenv import load_dotenv
 # Load .env from project root before anything reads os.environ
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-import pytest
-import pytest_asyncio
+import pytest  # noqa: E402
+import pytest_asyncio  # noqa: E402
 
-from blurt.classification.classifier import IntentClassifier
-from blurt.clients.embeddings import GeminiEmbeddingProvider
-from blurt.clients.gemini import GeminiClient
-from blurt.config.settings import GeminiConfig
-from blurt.core.entity_extractor import EntityExtractor
-from blurt.memory.episodic import EmotionSnapshot, EntityRef, InMemoryEpisodicStore
-from blurt.services.capture import BlurtCapturePipeline
-from blurt.services.embedding import EmbeddingService
-from blurt.services.emotion import EmotionDetectionService
+from blurt.classification.classifier import IntentClassifier  # noqa: E402
+from blurt.clients.embeddings import GeminiEmbeddingProvider  # noqa: E402
+from blurt.clients.gemini import GeminiClient  # noqa: E402
+from blurt.config.settings import GeminiConfig  # noqa: E402
+from blurt.core.entity_extractor import EntityExtractor  # noqa: E402
+from blurt.memory.episodic import EmotionSnapshot, EntityRef, InMemoryEpisodicStore  # noqa: E402
+from blurt.services.capture import BlurtCapturePipeline  # noqa: E402
+from blurt.services.embedding import EmbeddingService  # noqa: E402
+from blurt.services.emotion import EmotionDetectionService  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Auto-skip when GEMINI_API_KEY is absent

@@ -83,10 +83,10 @@ async def test_two_blurts_same_entity_creates_relationship(
     )
 
     # --- Process entities through the knowledge graph ---
-    nodes_1 = await semantic_store.process_extracted_entities(
+    _nodes_1 = await semantic_store.process_extracted_entities(
         entities_1, blurt_id="blurt-001", raw_text=blurt_1_text,
     )
-    nodes_2 = await semantic_store.process_extracted_entities(
+    _nodes_2 = await semantic_store.process_extracted_entities(
         entities_2, blurt_id="blurt-002", raw_text=blurt_2_text,
     )
 

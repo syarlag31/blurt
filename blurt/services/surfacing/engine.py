@@ -14,10 +14,9 @@ Design principles (anti-shame):
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Callable
 
 from blurt.services.surfacing.models import (
     ScoredTask,

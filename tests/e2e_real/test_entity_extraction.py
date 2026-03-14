@@ -36,7 +36,7 @@ async def test_extract_person_and_project_entities(
     )
 
     # Collect extracted types and lowered names for flexible assertions.
-    names_lower = [e.name.lower() for e in result.entities]
+    _names_lower = [e.name.lower() for e in result.entities]
     types_found = {e.entity_type for e in result.entities}
 
     # --- Person entity ---

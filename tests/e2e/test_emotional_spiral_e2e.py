@@ -24,9 +24,6 @@ import pytest
 
 from blurt.memory.episodic import (
     EmotionFilter,
-    EmotionSnapshot,
-    Episode,
-    EpisodeContext,
     InMemoryEpisodicStore,
 )
 from blurt.services.task_surfacing import (
@@ -34,7 +31,6 @@ from blurt.services.task_surfacing import (
     SurfaceableTask,
     SurfacingWeights,
     TaskScoringEngine,
-    TaskStatus,
     UserContext,
 )
 

@@ -14,16 +14,13 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-import pytest
 
 from blurt.services.task_surfacing import (
     EnergyLevel,
     SignalType,
     SurfaceableTask,
     SurfacingWeights,
-    TaskScoringEngine,
     TaskStatus,
-    UserContext,
 )
 from blurt.services.task_surfacing_query import (
     InMemoryTaskStore,

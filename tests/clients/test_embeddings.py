@@ -42,7 +42,7 @@ def gemini_config() -> GeminiConfig:
     return GeminiConfig(
         api_key="test-embed-key-12345",
         base_url="https://test.googleapis.com/v1beta",
-        embedding_model="text-embedding-004",
+        embedding_model="gemini-embedding-001",
         embedding_dimensions=768,
         max_retries=1,
         retry_backoff_base=0.01,
@@ -94,7 +94,7 @@ class TestGeminiEmbeddingProviderConfig:
     def test_from_config(self, gemini_config: GeminiConfig):
         provider = GeminiEmbeddingProvider(config=gemini_config)
         assert provider.dimension == 768
-        assert provider.model == "text-embedding-004"
+        assert provider.model == "gemini-embedding-001"
         assert provider.api_key == "test-embed-key-12345"
 
     def test_from_kwargs(self):
@@ -110,7 +110,7 @@ class TestGeminiEmbeddingProviderConfig:
     def test_defaults_without_config(self):
         provider = GeminiEmbeddingProvider(api_key="k")
         assert provider.dimension == 768
-        assert provider.model == "text-embedding-004"
+        assert provider.model == "gemini-embedding-001"
 
     def test_api_key_masked(self):
         provider = GeminiEmbeddingProvider(api_key="abcd1234efgh5678")
@@ -142,7 +142,7 @@ class TestGeminiEmbeddingProviderConfig:
         stats = provider.stats
         assert stats["request_count"] == 0
         assert stats["cache_hits"] == 0
-        assert stats["model"] == "text-embedding-004"
+        assert stats["model"] == "gemini-embedding-001"
         assert stats["dimension"] == 768
 
 

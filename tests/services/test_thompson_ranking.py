@@ -20,7 +20,6 @@ Covers:
 
 from __future__ import annotations
 
-import random
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -657,6 +656,7 @@ class TestQueryServiceIntegration:
         )
 
         result = service.query(SurfacingQuery(min_score=0.0))
+        assert result.weights_used is not None
         assert "_blend_factor" in result.weights_used
 
     def test_query_service_increments_surface_count(self):

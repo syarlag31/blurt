@@ -17,15 +17,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from blurt.api.task_surfacing import (
-    get_surfacing_service,
     router,
     set_surfacing_service,
 )
 from blurt.services.task_surfacing import (
     EnergyLevel,
     SurfaceableTask,
-    TaskScoringEngine,
-    TaskStatus,
 )
 from blurt.services.task_surfacing_query import (
     InMemoryTaskStore,

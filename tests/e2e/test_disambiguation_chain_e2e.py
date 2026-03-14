@@ -160,7 +160,7 @@ class TestCorrectionFlow:
         )
         assert r1["captured"] is True
         # "dentist thing" has no strong keyword match -> journal
-        first_intent = r1["intent"]
+        _first_intent = r1["intent"]
 
         # Step 2: User corrects with explicit task language
         r2 = await capture_blurt_via_api(
@@ -465,19 +465,19 @@ class TestFutureAutoResolution:
         session = "auto-resolve-chain"
 
         # Ambiguous blurt
-        r1 = await capture_blurt_via_api(
+        _r1 = await capture_blurt_via_api(
             "that project thing with the budget",
             session_id=session,
         )
 
         # Correction with entities
-        r2 = await capture_blurt_via_api(
+        _r2 = await capture_blurt_via_api(
             "I need to update Project Alpha budget for Acme",
             session_id=session,
         )
 
         # Confirmation
-        r3 = await capture_blurt_via_api(
+        _r3 = await capture_blurt_via_api(
             "yeah send the Project Alpha update to Bob at Acme",
             session_id=session,
         )
@@ -538,7 +538,7 @@ class TestFutureAutoResolution:
         """Semantic search across disambiguation chain episodes should return
         related episodes based on embedding similarity."""
         # Capture related blurts
-        r1 = await capture_blurt_via_api(
+        _r1 = await capture_blurt_via_api(
             "something about the project budget",
             session_id="semantic-disambig",
         )

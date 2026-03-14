@@ -21,15 +21,12 @@ from blurt.core.memory.models import (
     WorkingMemoryItem,
 )
 from blurt.core.memory.promotion import MemoryPromotionPipeline, MemoryStore, PromotionThresholds
-from blurt.core.memory.scoring import ImportanceScorer
 from blurt.memory.episodic import (
     EntityFilter,
     InMemoryEpisodicStore,
-    IntentFilter,
-    SessionFilter,
 )
 from blurt.memory.working import WorkingMemory
-from blurt.services.capture import BlurtCapturePipeline, CaptureResult, CaptureStage
+from blurt.services.capture import BlurtCapturePipeline, CaptureResult
 
 pytestmark = pytest.mark.asyncio
 
@@ -129,7 +126,7 @@ async def test_working_memory_stores_classified_blurt(
     intent_classifier,  # noqa: ANN001
 ) -> None:
     """Classify a blurt with real Gemini, store in working memory, verify retrieval."""
-    from blurt.memory.working import IntentType as WMIntentType, EmotionState
+    from blurt.memory.working import IntentType as WMIntentType
 
     # Classify with real Gemini
     scores = await intent_classifier.classify(INPUT_TEXT)

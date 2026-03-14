@@ -431,7 +431,7 @@ class TestEmbed:
         client = _setup_client(config, handler)
         resp = await client.embed("Hello world")
         assert len(resp.values) == 768
-        assert resp.model == "text-embedding-004"
+        assert resp.model == "gemini-embedding-001"
         assert resp.latency_ms > 0
         await client.close()
 

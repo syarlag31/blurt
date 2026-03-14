@@ -66,6 +66,7 @@ class ServerMessageType(str, enum.Enum):
     BLURT_CREATED = "blurt.created"  # Blurt processed and stored
     RESPONSE_AUDIO = "response.audio"  # Audio response chunk (TTS)
     RESPONSE_TEXT = "response.text"  # Text response (acknowledgment)
+    TASK_NUDGE = "task.nudge"  # Server-push task nudge
     ERROR = "error"
     PONG = "pong"
 

@@ -14,7 +14,7 @@ Anti-shame design:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
@@ -22,14 +22,10 @@ from pydantic import BaseModel, Field
 
 from blurt.services.task_surfacing import (
     EnergyLevel,
-    SignalType,
     SurfaceableTask,
     SurfacingWeights,
-    TaskScoringEngine,
-    TaskStatus,
 )
 from blurt.services.task_surfacing_query import (
-    InMemoryTaskStore,
     SurfacingQuery,
     TaskSurfacingQueryService,
 )

@@ -20,11 +20,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from blurt.api.classify import router, set_classification_pipeline
-from blurt.classification.models import (
-    ClassificationResult,
-    ClassificationStatus,
-    IntentScore,
-)
 from blurt.classification.pipeline import ClassificationPipeline
 from blurt.clients.gemini import GeminiClient, GeminiResponse
 from blurt.models.intents import BlurtIntent

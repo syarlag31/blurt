@@ -31,9 +31,6 @@ from typing import Any, Protocol
 from blurt.services.feedback import (
     FeedbackAction,
     FeedbackEvent,
-    FeedbackSummary,
-    InMemoryFeedbackStore,
-    TaskFeedbackService,
 )
 from blurt.services.surfacing.models import BehavioralProfile
 from blurt.services.surfacing.thompson import ThompsonSampler

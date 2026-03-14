@@ -25,7 +25,6 @@ from blurt.services.surfacing.engine import (
     CompositeResult,
     CompositeScoringEngine,
     DimensionScore,
-    RankingResult,
     SignalDimension,
     SignalWeights,
 )
@@ -35,7 +34,6 @@ from blurt.services.surfacing.models import (
     ScoredTask,
     SurfacingContext,
     TaskItem,
-    TimePreference,
 )
 from blurt.services.surfacing.thompson import ThompsonSampler
 
@@ -290,7 +288,7 @@ class TestWeightedAggregation:
 
     def test_weights_update_at_runtime(self):
         engine = CompositeScoringEngine()
-        old_weights = engine.get_weights()
+        _old_weights = engine.get_weights()
         new_weights = SignalWeights(mood=1.0, energy=0, time_of_day=0,
                                     calendar=0, entity_relevance=0, behavioral=0)
         engine.update_weights(new_weights)
@@ -369,7 +367,7 @@ class TestThompsonIntegration:
     def test_thompson_modulates_weights(self):
         """Thompson Sampling should change effective weights."""
         sampler = ThompsonSampler()
-        rng = random.Random(42)
+        _rng = random.Random(42)
 
         engine_no_ts = CompositeScoringEngine()
         engine_ts = CompositeScoringEngine(thompson_sampler=sampler)
@@ -377,7 +375,7 @@ class TestThompsonIntegration:
         task = _task()
         ctx = _ctx()
 
-        r_no_ts = engine_no_ts.score_task(task, ctx, use_thompson=False)
+        _r_no_ts = engine_no_ts.score_task(task, ctx, use_thompson=False)
         r_ts = engine_ts.score_task(task, ctx, use_thompson=True)
 
         # With Thompson, effective weights should differ from base
@@ -723,21 +721,11 @@ class TestImports:
     def test_import_from_surfacing_package(self):
         from blurt.services.surfacing import (
             CompositeScoringEngine,
-            CompositeResult,
-            DimensionScore,
-            RankingResult,
-            SignalDimension,
-            SignalWeights,
         )
         assert CompositeScoringEngine is not None
 
     def test_import_from_services(self):
         from blurt.services import (
             CompositeScoringEngine,
-            CompositeResult,
-            DimensionScore,
-            RankingResult,
-            SignalDimension,
-            SignalWeights,
         )
         assert CompositeScoringEngine is not None

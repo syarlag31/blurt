@@ -21,7 +21,7 @@ from typing import Any
 import httpx
 import pytest
 
-from blurt.services.feedback import InMemoryFeedbackStore, TaskFeedbackService
+from blurt.services.feedback import InMemoryFeedbackStore
 
 
 pytestmark = pytest.mark.asyncio

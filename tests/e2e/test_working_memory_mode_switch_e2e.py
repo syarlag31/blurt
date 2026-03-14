@@ -19,12 +19,10 @@ hot-reload.
 
 from __future__ import annotations
 
-import time
-from typing import Any, AsyncGenerator
+from typing import Any
 
 import httpx
 import pytest
-import pytest_asyncio
 from fastapi import FastAPI
 
 from blurt.api.capture import router as capture_router, set_pipeline
@@ -38,9 +36,7 @@ from blurt.memory.working import (
     EmotionLabel,
     EmotionState,
     IntentType,
-    SessionContext,
     WorkingMemory,
-    WorkingMemoryEntry,
 )
 from blurt.middleware.egress_guard import EgressGuard
 from blurt.services.capture import BlurtCapturePipeline
@@ -88,7 +84,7 @@ def _build_app_with_shared_wm(
     pattern_service = PatternService(store=pattern_store)
     feedback_service = TaskFeedbackService(store=feedback_store)
 
-    _registered_paths = {r.path for r in application.routes}
+    _registered_paths = {getattr(r, "path", None) for r in application.routes}
     if "/api/v1/blurt" not in _registered_paths:
         application.include_router(capture_router)
     if "/api/v1/episodes" not in _registered_paths:

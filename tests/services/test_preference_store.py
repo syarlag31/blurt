@@ -662,7 +662,7 @@ class TestAdaptation:
                 "user-1", "task", FeedbackType.ACCEPTED, now=now
             )
 
-        initial_mean = fast_decay_store.get_params(
+        _initial_mean = fast_decay_store.get_params(
             "user-1", "task", apply_decay=False
         ).mean
 

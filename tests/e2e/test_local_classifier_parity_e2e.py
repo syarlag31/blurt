@@ -18,17 +18,14 @@ from typing import Any
 
 import httpx
 import pytest
-import pytest_asyncio
 from fastapi import FastAPI
 
 from blurt.api.capture import router as capture_router, set_pipeline
 from blurt.api.episodes import router as episodes_router, set_store
 from blurt.api.patterns import (
-    router as patterns_router,
     set_pattern_service,
 )
 from blurt.api.task_feedback import (
-    router as feedback_router,
     set_feedback_service,
 )
 from blurt.config.settings import BlurtConfig, DeploymentMode
@@ -125,7 +122,7 @@ async def _cloud_stub_classify(text: str) -> tuple[str, float]:
 # Shared stub helpers (entity, emotion, embed — same for both modes)
 # ---------------------------------------------------------------------------
 
-import uuid
+import uuid  # noqa: E402
 
 
 async def _stub_extract_entities(text: str) -> list[EntityRef]:
@@ -195,7 +192,7 @@ def _build_app_and_pipeline(
     config = BlurtConfig(mode=DeploymentMode.CLOUD, debug=True)
     application = create_app(config)
 
-    _registered = {r.path for r in application.routes}
+    _registered = {getattr(r, "path", None) for r in application.routes}
     if "/api/v1/blurt" not in _registered:
         application.include_router(capture_router)
     if "/api/v1/episodes" not in _registered:

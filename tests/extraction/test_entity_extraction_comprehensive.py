@@ -17,12 +17,8 @@ import pytest
 
 from blurt.extraction.entities import (
     EntityExtractor,
-    EntityExtractionError,
     ExtractionResult,
     ExtractedEntity,
-    ExtractedFact,
-    ExtractedRelationship,
-    TemporalReference,
     TemporalType,
 )
 from blurt.models.entities import EntityType, FactType, RelationshipType

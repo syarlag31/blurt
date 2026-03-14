@@ -15,8 +15,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from blurt.api.clear_state import (
-    get_clear_service,
-    get_scoring_engine,
     router,
     set_clear_service,
     set_scoring_engine,
@@ -25,11 +23,7 @@ from blurt.services.clear_state import (
     ClearStateService,
     ClearTone,
     _CALM_MESSAGES,
-    _CELEBRATORY_MESSAGES,
-    _GENTLE_MESSAGES,
     _SHAME_WORDS,
-    _WARM_MESSAGES,
-    _MESSAGE_POOLS,
 )
 from blurt.services.task_surfacing import TaskScoringEngine
 

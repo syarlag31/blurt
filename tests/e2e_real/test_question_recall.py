@@ -19,7 +19,7 @@ import pytest
 from blurt.clients.embeddings import GeminiEmbeddingProvider
 from blurt.memory.episodic import InMemoryEpisodicStore, IntentFilter
 from blurt.services.capture import BlurtCapturePipeline, CaptureResult
-from blurt.services.recall import PersonalHistoryRecallEngine, RecallSourceType
+from blurt.services.recall import PersonalHistoryRecallEngine
 
 pytestmark = pytest.mark.asyncio
 

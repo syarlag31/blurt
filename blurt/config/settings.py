@@ -160,6 +160,7 @@ class BlurtConfig:
     websocket: WebSocketConfig = field(default_factory=WebSocketConfig)
     data_dir: Path = field(default_factory=lambda: Path.home() / ".blurt")
     encryption_enabled: bool = True
+    database_url: str = ""
     host: str = "0.0.0.0"
     port: int = 8000
     debug: bool = False
@@ -174,6 +175,7 @@ class BlurtConfig:
         data_dir = Path(data_dir_str) if data_dir_str else Path.home() / ".blurt"
 
         encryption = os.environ.get("BLURT_ENCRYPTION", "true").lower() != "false"
+        database_url = os.environ.get("DATABASE_URL", "")
 
         gemini_overrides = {
             k: v for k, v in overrides.items()
@@ -198,6 +200,7 @@ class BlurtConfig:
             gemini=GeminiConfig.from_env(**gemini_overrides),
             websocket=WebSocketConfig.from_env(**ws_overrides),
             data_dir=remaining.get("data_dir", data_dir),  # type: ignore[arg-type]
+            database_url=remaining.get("database_url", database_url),  # type: ignore[arg-type]
             encryption_enabled=remaining.get("encryption_enabled", encryption),  # type: ignore[arg-type]
             host=remaining.get("host", host),  # type: ignore[arg-type]
             port=remaining.get("port", port),  # type: ignore[arg-type]

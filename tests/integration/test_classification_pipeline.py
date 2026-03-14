@@ -19,7 +19,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from blurt.classification.adapter import ClassificationAdapter
-from blurt.classification.models import ClassificationResult, ClassificationStatus
+from blurt.classification.models import ClassificationStatus
 from blurt.classification.pipeline import ClassificationPipeline
 from blurt.clients.gemini import GeminiClient, GeminiResponse
 from blurt.memory.episodic import InMemoryEpisodicStore

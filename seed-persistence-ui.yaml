@@ -1,0 +1,112 @@
+goal: >
+  Add Neon Postgres persistence for all 9 stores and build a minimal React
+  mobile-first UI for dogfooding Blurt. Wire the Gemini audio pipeline into
+  the WebSocket handler. The backend exists with 102 source files, full AI
+  pipeline, and in-memory stores behind Protocol/ABC interfaces. This work
+  replaces all in-memory stores with Neon Postgres (asyncpg + pgvector),
+  evolves the WebSocket to a persistent connection supporting both audio
+  capture and server-push task nudges, and creates a frontend/ React app
+  with chat-style UX, voice input, and task surfacing.
+
+constraints:
+  - Use asyncpg with a shared connection pool created in FastAPI lifespan
+  - Use pgvector extension for 768-dim gemini-embedding-001 vectors
+  - Raw SQL CREATE IF NOT EXISTS at startup, no Alembic migrations
+  - Parameterized queries everywhere, no string interpolation in SQL
+  - Replace in-memory stores outright, no dual backend abstraction
+  - Refactor SemanticMemoryStore and SyncStateStore to extract ABCs before replacing
+  - React app in frontend/ directory (monorepo), JavaScript not TypeScript
+  - Minimal dependencies, mobile-first responsive web app
+  - Focus on UX not styling
+  - Hardcoded single user_id, no auth system
+  - Add CORS middleware to FastAPI
+  - Voice button supports both tap-to-toggle and press-and-hold
+  - Wire GeminiAudioClient into WebSocket handler replacing placeholder
+  - Single persistent WebSocket for audio capture AND server-push nudges
+  - Acknowledgments use existing AcknowledgmentService (8 words max, emotion-aware)
+  - DATABASE_URL from .env for Neon connection string
+
+acceptance_criteria:
+  - asyncpg connection pool initializes in FastAPI lifespan startup and closes on shutdown
+  - pgvector extension enabled and semantic_memory table has a vector(768) column
+  - All 9 stores have Neon Postgres implementations (episodic, semantic, entity_graph, task, feedback, pattern, preference, behavioral_signal, sync_state)
+  - Raw SQL schema scripts run CREATE IF NOT EXISTS for all tables at startup
+  - Episodes persist across server restarts (write, restart, read back)
+  - Semantic similarity search works via pgvector cosine distance operator
+  - Entity graph relationships persist with co-mention strength
+  - Thompson Sampling beta parameters persist across restarts
+  - Pattern store persists learned user rhythms
+  - WebSocket handler wires GeminiAudioClient.process_audio replacing placeholder response
+  - WebSocket connection stays alive between audio capture sessions (persistent, not session-scoped)
+  - Server pushes task surfacing nudges through the persistent WebSocket
+  - CORS middleware allows frontend origin
+  - React app in frontend/ with Vite, mobile-first responsive layout
+  - Chat-style feed showing user messages with AcknowledgmentService responses and metadata cards (intent, entities, emotion, confidence)
+  - Persistent top card showing the single best-ranked task via Thompson Sampling
+  - Voice button with tap-to-toggle (default) and press-and-hold alternative
+  - Text input for typed blurts
+  - MediaRecorder sends audio/webm chunks over WebSocket to backend
+  - Frontend connects to persistent WebSocket and handles both audio responses and push nudges
+
+ontology_schema:
+  name: BlurtPersistenceAndUI
+  description: >
+    Neon Postgres persistence layer for all Blurt stores plus a React
+    mobile-first dogfooding UI with voice input and task surfacing
+  fields:
+    - name: postgres_store
+      type: object
+      description: A Neon Postgres implementation of a Blurt store (asyncpg, parameterized queries)
+    - name: schema_script
+      type: string
+      description: Raw SQL CREATE IF NOT EXISTS script for a store table
+    - name: websocket_message
+      type: object
+      description: WebSocket protocol message (audio chunk, capture result, task nudge)
+    - name: react_component
+      type: object
+      description: React UI component (chat feed, voice button, task card, metadata card)
+    - name: connection_pool
+      type: object
+      description: asyncpg pool configuration with Neon connection string
+
+evaluation_principles:
+  - name: persistence_correctness
+    description: All data survives server restarts and is queryable after re-connection
+    weight: 1.0
+  - name: pipeline_integrity
+    description: Full capture pipeline still works end-to-end with Postgres stores replacing in-memory
+    weight: 1.0
+  - name: voice_end_to_end
+    description: Voice input flows from MediaRecorder through WebSocket to Gemini and back with real classification
+    weight: 0.9
+  - name: mobile_ux
+    description: UI is usable on a phone browser with touch-friendly targets and responsive layout
+    weight: 0.8
+  - name: real_time_push
+    description: Task nudges are pushed to the UI via persistent WebSocket without user action
+    weight: 0.7
+  - name: zero_sql_injection
+    description: All SQL uses parameterized queries, no string interpolation
+    weight: 1.0
+
+exit_conditions:
+  - name: persistence_validated
+    description: Data written to Neon survives a server restart and is readable
+    criteria: Write episodes, restart uvicorn, query episodes back successfully
+  - name: voice_pipeline_works
+    description: Voice input produces real Gemini classification results
+    criteria: MediaRecorder audio flows through WebSocket to GeminiAudioClient and returns classified intent
+  - name: ui_usable_on_mobile
+    description: React app works on phone browser with text and voice input
+    criteria: Chat feed, voice button, task card, and metadata cards render correctly on mobile viewport
+  - name: task_surfacing_live
+    description: Thompson Sampling surfaces tasks and persists feedback
+    criteria: Task card shows ranked task, user feedback updates beta parameters in Postgres
+
+metadata:
+  version: 1.0.0
+  timestamp: 2026-03-14
+  ambiguity_score: 0.10
+  source: socratic_interview
+  interview_session: interview_20260314_155229

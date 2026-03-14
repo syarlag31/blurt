@@ -27,11 +27,9 @@ from fastapi import FastAPI
 from blurt.api.capture import router as capture_router, set_pipeline
 from blurt.api.episodes import router as episodes_router, set_store
 from blurt.api.patterns import (
-    router as patterns_router,
     set_pattern_service,
 )
 from blurt.api.task_feedback import (
-    router as feedback_router,
     set_feedback_service,
 )
 from blurt.config.settings import BlurtConfig, DeploymentMode
@@ -227,7 +225,7 @@ def app(
     # Register additional routers that are not in the default app
     # (capture and episodes are used via the pipeline but may not be
     # mounted by create_app; include them idempotently)
-    _registered_paths = {r.path for r in application.routes}
+    _registered_paths = {getattr(r, "path", None) for r in application.routes}
 
     if "/api/v1/blurt" not in _registered_paths:
         application.include_router(capture_router)

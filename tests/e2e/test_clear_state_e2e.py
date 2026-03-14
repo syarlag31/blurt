@@ -29,18 +29,14 @@ from blurt.api.task_surfacing import (
     set_surfacing_service,
 )
 from blurt.services.clear_state import (
-    ClearStateMessage,
     ClearStateService,
-    ClearTone,
     _MESSAGE_POOLS,
     _SHAME_WORDS,
 )
 from blurt.services.task_surfacing import (
-    EnergyLevel,
     SurfaceableTask,
     TaskScoringEngine,
     TaskStatus,
-    UserContext,
 )
 from blurt.services.task_surfacing_query import (
     InMemoryTaskStore,

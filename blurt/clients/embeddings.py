@@ -82,7 +82,7 @@ class GeminiEmbeddingProvider(EmbeddingProvider):
     with chunking, and an in-memory LRU cache.
     """
 
-    # Gemini text-embedding-004 supports 768 dimensions by default
+    # Gemini gemini-embedding-001 supports 768 dimensions by default
     DEFAULT_DIMENSION = 768
     # Max texts per batchEmbedContents call
     BATCH_CHUNK_SIZE = 100
@@ -101,7 +101,7 @@ class GeminiEmbeddingProvider(EmbeddingProvider):
         Args:
             config: Full GeminiConfig. If provided, other kwargs are ignored.
             api_key: API key (if config not provided).
-            model: Embedding model ID (default: text-embedding-004).
+            model: Embedding model ID (default: gemini-embedding-001).
             dimensions: Output embedding dimensions (default: 768).
             cache_size: Max entries in the LRU embedding cache (0 to disable).
         """

@@ -31,10 +31,14 @@ from fastapi import WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from blurt.audio.buffer import AudioBuffer, BufferEmptyError, BufferOverflowError
+from blurt.audio.models import AudioFormat, AudioEncoding as PipelineAudioEncoding
+from blurt.audio.pipeline import AudioPipeline
 from blurt.audio.session_manager import SessionLimitError, SessionManager
+from blurt.classification.models import ClassificationResult, ClassificationStatus
 from blurt.config.settings import WebSocketConfig
 from blurt.models.audio import (
     AudioConfig,
+    AudioEncoding,
     AudioSession,
     ClientMessageType,
     ServerMessage,
@@ -43,15 +47,23 @@ from blurt.models.audio import (
     SessionState,
     TextInputPayload,
 )
+from blurt.models.emotions import EmotionResult, EmotionScore, PrimaryEmotion
+from blurt.models.intents import BlurtIntent
+from blurt.services.acknowledgment import AcknowledgmentService
 
 logger = logging.getLogger(__name__)
 
 
 class AudioWebSocketHandler:
-    """Handles a single WebSocket connection for full-duplex audio streaming.
+    """Handles a persistent WebSocket connection for full-duplex audio streaming.
 
-    Each instance manages one client connection through its lifecycle:
-    init → streaming → processing → response → close.
+    The connection stays alive across multiple audio capture sessions.
+    A single WebSocket supports:
+      - Multiple session.init → session.end cycles (audio capture)
+      - Server-push messages (task nudges) at any time
+      - Keepalive pings between capture sessions
+
+    Lifecycle: connect → (init → stream → end)* → disconnect
     """
 
     def __init__(
@@ -59,35 +71,75 @@ class AudioWebSocketHandler:
         websocket: WebSocket,
         session_manager: SessionManager,
         config: WebSocketConfig,
+        pipeline: AudioPipeline | None = None,
+        ack_service: AcknowledgmentService | None = None,
     ) -> None:
         self._ws = websocket
         self._session_manager = session_manager
         self._config = config
+        self._pipeline = pipeline
+        self._ack_service = ack_service or AcknowledgmentService()
         self._session: AudioSession | None = None
         self._buffer: AudioBuffer | None = None
         self._client_sequence: int = -1
         self._closed = False
+        # Queue for server-initiated push messages (task nudges, etc.)
+        self._push_queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+        # User ID is set on first session.init and persists across sessions
+        self._user_id: str | None = None
 
     @property
     def session_id(self) -> str | None:
         """The current session ID, if initialized."""
         return self._session.session_id if self._session else None
 
-    async def handle(self) -> None:
-        """Main handler loop — run after WebSocket accept.
+    @property
+    def user_id(self) -> str | None:
+        """The user ID from the first session.init."""
+        return self._user_id
 
-        Receives messages, dispatches to handlers, and manages
-        the session lifecycle. Handles all error cases gracefully.
+    async def push_message(self, msg_type: ServerMessageType, payload: dict[str, Any]) -> None:
+        """Push a server-initiated message to the client (e.g. task nudge).
+
+        Safe to call from any coroutine. Messages are delivered via the
+        push writer task running alongside the message loop.
+        """
+        if self._closed:
+            return
+        await self._push_queue.put({"type": msg_type, "payload": payload})
+
+    async def send_task_nudge(self, nudge_payload: dict[str, Any]) -> None:
+        """Convenience method to send a task.nudge event to this client.
+
+        Args:
+            nudge_payload: Dict with task_id, content, intent, reason,
+                           priority, due_at, entity_names, etc.
+        """
+        await self.push_message(ServerMessageType.TASK_NUDGE, nudge_payload)
+
+    async def handle(self) -> None:
+        """Main handler loop — persistent across multiple capture sessions.
+
+        The WebSocket stays open after session.end, waiting for the next
+        session.init. Only an explicit disconnect or error closes it.
         """
         try:
             await self._ws.accept()
-            logger.info("WebSocket connection accepted")
+            logger.info("WebSocket connection accepted (persistent mode)")
 
-            # Wait for session.init as the first message
+            # Wait for first session.init
             await self._wait_for_init()
 
-            # Main message loop
-            await self._message_loop()
+            # Run message loop and push writer concurrently
+            push_task = asyncio.create_task(self._push_writer())
+            try:
+                await self._message_loop()
+            finally:
+                push_task.cancel()
+                try:
+                    await push_task
+                except asyncio.CancelledError:
+                    pass
 
         except WebSocketDisconnect as e:
             logger.info(
@@ -102,6 +154,23 @@ class AudioWebSocketHandler:
             await self._send_error("internal_error", "An unexpected error occurred")
         finally:
             await self._cleanup()
+
+    async def _push_writer(self) -> None:
+        """Drains the push queue and sends server-initiated messages.
+
+        Runs as a background task alongside _message_loop so that
+        server-push (task nudges) can be sent at any time.
+        """
+        try:
+            while not self._closed:
+                msg = await self._push_queue.get()
+                msg_type = msg["type"]
+                payload = msg["payload"]
+                await self._send_message(msg_type, payload)
+        except asyncio.CancelledError:
+            pass
+        except Exception:
+            logger.exception("Error in push writer")
 
     async def _wait_for_init(self) -> None:
         """Wait for and process the session.init message.
@@ -135,7 +204,12 @@ class AudioWebSocketHandler:
         await self._handle_session_init(msg)
 
     async def _message_loop(self) -> None:
-        """Main message receive loop — processes all message types."""
+        """Persistent message receive loop — survives across capture sessions.
+
+        When a session ends, the loop continues waiting for the next
+        session.init or keepalive pings. The connection only closes on
+        disconnect, cancellation, or idle timeout.
+        """
         while not self._closed:
             try:
                 message = await asyncio.wait_for(
@@ -143,8 +217,12 @@ class AudioWebSocketHandler:
                     timeout=self._config.idle_timeout,
                 )
             except asyncio.TimeoutError:
-                logger.info("Session idle timeout: %s", self.session_id)
-                await self._send_error("idle_timeout", "Session timed out due to inactivity")
+                logger.info(
+                    "Connection idle timeout: session=%s user=%s",
+                    self.session_id,
+                    self._user_id,
+                )
+                await self._send_error("idle_timeout", "Connection timed out due to inactivity")
                 break
 
             # Handle different WebSocket frame types
@@ -178,8 +256,9 @@ class AudioWebSocketHandler:
         if msg_type != ClientMessageType.PING.value:
             self._client_sequence = sequence
 
-        # Dispatch by message type
+        # Dispatch by message type — session.init allowed for re-initialization
         handlers = {
+            ClientMessageType.SESSION_INIT.value: self._handle_session_init,
             ClientMessageType.AUDIO_COMMIT.value: self._handle_audio_commit,
             ClientMessageType.TEXT_INPUT.value: self._handle_text_input,
             ClientMessageType.SESSION_PAUSE.value: self._handle_session_pause,
@@ -248,7 +327,22 @@ class AudioWebSocketHandler:
             )
 
     async def _handle_session_init(self, msg: dict[str, Any]) -> None:
-        """Process session.init — create session and audio buffer."""
+        """Process session.init — create session and audio buffer.
+
+        Supports re-initialization: if an old session exists, it is
+        cleaned up before creating a new one. This allows the persistent
+        WebSocket to cycle through multiple capture sessions.
+        """
+        # Clean up any existing session before re-initializing
+        if self._session:
+            logger.info(
+                "Re-initializing session on persistent connection: old=%s",
+                self._session.session_id,
+            )
+            await self._session_manager.end_session(self._session.session_id)
+            self._session = None
+            self._buffer = None
+
         # Track sequence from init message
         sequence = msg.get("sequence", 0)
         self._client_sequence = sequence
@@ -275,6 +369,9 @@ class AudioWebSocketHandler:
 
         self._buffer = await self._session_manager.get_buffer(self._session.session_id)
 
+        # Persist user_id across session cycles on this connection
+        self._user_id = init_payload.user_id
+
         await self._send_message(
             ServerMessageType.SESSION_CREATED,
             {
@@ -286,7 +383,7 @@ class AudioWebSocketHandler:
         )
 
         logger.info(
-            "Session initialized: %s user=%s encoding=%s rate=%d",
+            "Session initialized: %s user=%s encoding=%s rate=%d (persistent connection)",
             self._session.session_id,
             init_payload.user_id,
             init_payload.audio_config.encoding.value,
@@ -294,7 +391,7 @@ class AudioWebSocketHandler:
         )
 
     async def _handle_audio_commit(self, msg: dict[str, Any]) -> None:
-        """Handle audio.commit — process the buffered utterance."""
+        """Handle audio.commit — process the buffered utterance through Gemini."""
         if not self._session or not self._buffer:
             await self._send_error("no_session", "No active session")
             return
@@ -313,40 +410,140 @@ class AudioWebSocketHandler:
             return
 
         self._session.utterances_processed += 1
+        utterance_id = self._session.utterances_processed
 
-        # For now, send a placeholder transcript.final and blurt.created
-        # The actual Gemini processing pipeline will be plugged in here
-        await self._send_message(
-            ServerMessageType.TRANSCRIPT_FINAL,
-            {
-                "utterance_id": self._session.utterances_processed,
-                "audio_bytes": len(audio_data),
-                "audio_duration_ms": _estimate_duration_ms(
+        # Convert WebSocket audio config to pipeline AudioFormat
+        audio_format = _ws_config_to_audio_format(self._session.audio_config)
+
+        if self._pipeline is not None:
+            try:
+                result = await self._pipeline.process_audio(
                     audio_data,
-                    self._session.audio_config,
-                ),
-                "transcript": None,  # Will be filled by Gemini pipeline
-                "status": "pending_processing",
-            },
-        )
+                    audio_format,
+                    user_id=self._session.user_id,
+                )
 
-        await self._send_message(
-            ServerMessageType.RESPONSE_TEXT,
-            {
-                "utterance_id": self._session.utterances_processed,
-                "text": "Got it.",
-                "type": "acknowledgment",
-            },
-        )
+                # Use pipeline duration or fall back to local estimate
+                duration_ms = result.audio_duration_ms or _estimate_duration_ms(
+                    audio_data, self._session.audio_config,
+                )
+
+                # Send the final transcript
+                await self._send_message(
+                    ServerMessageType.TRANSCRIPT_FINAL,
+                    {
+                        "utterance_id": utterance_id,
+                        "audio_bytes": len(audio_data),
+                        "audio_duration_ms": duration_ms,
+                        "transcript": result.transcript,
+                        "status": "complete" if result.pipeline_complete else "partial",
+                        "intent": result.intent,
+                        "confidence": result.confidence,
+                        "processing_time_ms": result.processing_time_ms,
+                    },
+                )
+
+                # Generate emotion-aware acknowledgment via AcknowledgmentService
+                ack = self._build_acknowledgment(result)
+
+                if ack.is_silent and ack.answer:
+                    # For questions, send the answer
+                    await self._send_message(
+                        ServerMessageType.RESPONSE_TEXT,
+                        {
+                            "utterance_id": utterance_id,
+                            "text": ack.answer,
+                            "type": "answer",
+                        },
+                    )
+                elif not ack.is_silent and ack.text:
+                    await self._send_message(
+                        ServerMessageType.RESPONSE_TEXT,
+                        {
+                            "utterance_id": utterance_id,
+                            "text": ack.text,
+                            "type": "acknowledgment",
+                            "tone": ack.tone.value,
+                        },
+                    )
+
+                # Send blurt.created with full classification data (only on success)
+                if result.pipeline_complete and not result.error:
+                    await self._send_message(
+                        ServerMessageType.BLURT_CREATED,
+                        {
+                            "utterance_id": utterance_id,
+                            "blurt_id": result.id,
+                            "transcript": result.transcript,
+                            "intent": result.intent,
+                            "confidence": result.confidence,
+                            "entities": result.entities,
+                            "emotion": result.emotion,
+                            "pipeline_complete": result.pipeline_complete,
+                        },
+                    )
+
+            except Exception:
+                logger.exception(
+                    "Pipeline processing failed: session=%s utterance=%d",
+                    self.session_id,
+                    utterance_id,
+                )
+                # Graceful degradation: still acknowledge receipt
+                await self._send_message(
+                    ServerMessageType.TRANSCRIPT_FINAL,
+                    {
+                        "utterance_id": utterance_id,
+                        "audio_bytes": len(audio_data),
+                        "audio_duration_ms": _estimate_duration_ms(
+                            audio_data, self._session.audio_config,
+                        ),
+                        "transcript": None,
+                        "status": "error",
+                    },
+                )
+                from blurt.services.acknowledgment import generate_acknowledgment_for_error
+                error_ack = generate_acknowledgment_for_error()
+                await self._send_message(
+                    ServerMessageType.RESPONSE_TEXT,
+                    {
+                        "utterance_id": utterance_id,
+                        "text": error_ack.text,
+                        "type": "acknowledgment",
+                    },
+                )
+        else:
+            # No pipeline available — send placeholder (development fallback)
+            await self._send_message(
+                ServerMessageType.TRANSCRIPT_FINAL,
+                {
+                    "utterance_id": utterance_id,
+                    "audio_bytes": len(audio_data),
+                    "audio_duration_ms": _estimate_duration_ms(
+                        audio_data, self._session.audio_config,
+                    ),
+                    "transcript": None,
+                    "status": "no_pipeline",
+                },
+            )
+            await self._send_message(
+                ServerMessageType.RESPONSE_TEXT,
+                {
+                    "utterance_id": utterance_id,
+                    "text": "Got it.",
+                    "type": "acknowledgment",
+                },
+            )
 
         # Return to active state, ready for next utterance
         self._session.state = SessionState.ACTIVE
 
     async def _handle_text_input(self, msg: dict[str, Any]) -> None:
-        """Handle text.input — process text as a blurt (edits/corrections)."""
-        if not self._session:
-            await self._send_error("no_session", "No active session")
-            return
+        """Handle text.input — classify text and generate acknowledgment.
+
+        Works both during and between capture sessions on the persistent
+        connection. Text input does not require an active audio session.
+        """
 
         payload_data = msg.get("payload", {})
         try:
@@ -355,17 +552,88 @@ class AudioWebSocketHandler:
             await self._send_error("invalid_payload", f"Invalid text.input payload: {e}")
             return
 
-        self._session.touch()
+        if self._session:
+            self._session.touch()
 
-        # Acknowledge text receipt — pipeline processing will be added later
-        await self._send_message(
-            ServerMessageType.RESPONSE_TEXT,
-            {
-                "text": "Got it.",
-                "type": "acknowledgment",
-                "input_text": text_payload.text,
-            },
-        )
+        if self._pipeline is not None:
+            try:
+                # Use Gemini to classify the text input
+                classification_data = await self._pipeline._gemini.classify_transcript(
+                    text_payload.text
+                )
+
+                intent_str = classification_data.get("intent", "journal")
+                confidence = classification_data.get("confidence", 0.0)
+                emotion_data = classification_data.get("emotion", {})
+                entities = classification_data.get("entities", [])
+
+                # Build ClassificationResult for the AcknowledgmentService
+                try:
+                    intent = BlurtIntent(intent_str)
+                except ValueError:
+                    intent = BlurtIntent.JOURNAL
+
+                status = (
+                    ClassificationStatus.CONFIDENT
+                    if confidence >= 0.85
+                    else ClassificationStatus.LOW_CONFIDENCE
+                )
+                cr = ClassificationResult(
+                    input_text=text_payload.text,
+                    primary_intent=intent,
+                    confidence=confidence,
+                    status=status,
+                )
+
+                # Build EmotionResult if available
+                emotion_result = _parse_emotion_data(emotion_data)
+
+                ack = self._ack_service.acknowledge(cr, emotion_result)
+
+                await self._send_message(
+                    ServerMessageType.RESPONSE_TEXT,
+                    {
+                        "text": ack.text if not ack.is_silent else (ack.answer or ""),
+                        "type": "answer" if ack.is_silent else "acknowledgment",
+                        "input_text": text_payload.text,
+                        "intent": intent_str,
+                        "confidence": confidence,
+                        "entities": entities,
+                    },
+                )
+
+                await self._send_message(
+                    ServerMessageType.BLURT_CREATED,
+                    {
+                        "transcript": text_payload.text,
+                        "intent": intent_str,
+                        "confidence": confidence,
+                        "entities": entities,
+                        "emotion": emotion_data,
+                        "input_source": "text",
+                    },
+                )
+
+            except Exception:
+                logger.exception("Text classification failed: session=%s", self.session_id)
+                await self._send_message(
+                    ServerMessageType.RESPONSE_TEXT,
+                    {
+                        "text": "Got it.",
+                        "type": "acknowledgment",
+                        "input_text": text_payload.text,
+                    },
+                )
+        else:
+            # No pipeline — fallback
+            await self._send_message(
+                ServerMessageType.RESPONSE_TEXT,
+                {
+                    "text": "Got it.",
+                    "type": "acknowledgment",
+                    "input_text": text_payload.text,
+                },
+            )
 
     async def _handle_session_pause(self, msg: dict[str, Any]) -> None:
         """Handle session.pause — pause audio processing."""
@@ -394,9 +662,15 @@ class AudioWebSocketHandler:
         )
 
     async def _handle_session_end(self, msg: dict[str, Any]) -> None:
-        """Handle session.end — graceful shutdown."""
+        """Handle session.end — end the capture session but keep connection alive.
+
+        The WebSocket stays open for:
+          - Starting a new capture session (session.init)
+          - Receiving server-push messages (task nudges)
+          - Keepalive pings
+        """
         if self._session:
-            # Commit any remaining audio before closing
+            # Commit any remaining audio before ending
             if self._buffer and not self._buffer.is_empty:
                 await self._handle_audio_commit(msg)
 
@@ -406,20 +680,37 @@ class AudioWebSocketHandler:
                     "chunks_received": self._session.chunks_received,
                     "bytes_received": self._session.bytes_received,
                     "utterances_processed": self._session.utterances_processed,
+                    "persistent": True,
                 },
             )
 
-        self._closed = True
+            # Clean up session state, but keep the connection open
+            await self._session_manager.end_session(self._session.session_id)
+            logger.info(
+                "Session ended (connection persists): %s user=%s",
+                self._session.session_id,
+                self._user_id,
+            )
+            self._session = None
+            self._buffer = None
+            # Note: self._closed is NOT set — connection stays alive
 
     async def _handle_ping(self, msg: dict[str, Any]) -> None:
-        """Handle ping — respond with pong."""
+        """Handle ping — respond with pong.
+
+        Works both during and between capture sessions to keep
+        the persistent connection alive.
+        """
         session_id = self._session.session_id if self._session else "none"
         await self._ws.send_text(
             ServerMessage(
                 type=ServerMessageType.PONG,
                 session_id=session_id,
                 sequence=0,
-                payload={"server_time": time.time()},
+                payload={
+                    "server_time": time.time(),
+                    "has_session": self._session is not None,
+                },
             ).model_dump_json()
         )
 
@@ -459,12 +750,123 @@ class AudioWebSocketHandler:
             {"code": code, "message": message},
         )
 
+    def _build_acknowledgment(self, result: Any) -> Any:
+        """Build an acknowledgment from a PipelineResult using the AcknowledgmentService."""
+        from blurt.services.acknowledgment import generate_acknowledgment_for_error
+
+        intent_str = result.intent or "journal"
+        try:
+            intent = BlurtIntent(intent_str)
+        except ValueError:
+            intent = BlurtIntent.JOURNAL
+
+        confidence = result.confidence or 0.0
+        status = (
+            ClassificationStatus.CONFIDENT
+            if confidence >= 0.85
+            else ClassificationStatus.LOW_CONFIDENCE
+        )
+
+        if result.error:
+            return generate_acknowledgment_for_error()
+
+        cr = ClassificationResult(
+            input_text=result.transcript,
+            primary_intent=intent,
+            confidence=confidence,
+            status=status,
+        )
+
+        emotion_result = _parse_emotion_data(result.emotion)
+
+        # Use the acknowledgment from Gemini classification if available,
+        # otherwise fall back to the AcknowledgmentService
+        if result.acknowledgment:
+            from blurt.services.acknowledgment import Acknowledgment, _select_tone
+            tone = _select_tone(emotion_result)
+            return Acknowledgment(
+                text=result.acknowledgment,
+                tone=tone,
+                intent=intent,
+                is_silent=(intent == BlurtIntent.QUESTION),
+            )
+
+        return self._ack_service.acknowledge(cr, emotion_result)
+
     async def _cleanup(self) -> None:
-        """Clean up session state on disconnect."""
+        """Clean up session state on final disconnect.
+
+        Called when the WebSocket connection itself closes (not on session.end).
+        """
+        self._closed = True
         if self._session:
             await self._session_manager.end_session(self._session.session_id)
             self._session = None
             self._buffer = None
+        logger.info(
+            "Persistent WebSocket connection closed: user=%s",
+            self._user_id,
+        )
+
+
+def _parse_emotion_data(emotion_data: dict[str, Any] | None) -> EmotionResult | None:
+    """Parse emotion dict from Gemini classification into an EmotionResult."""
+    if not emotion_data:
+        return None
+    try:
+        primary_str = emotion_data.get("primary", "trust")
+        try:
+            primary_emotion = PrimaryEmotion(primary_str)
+        except ValueError:
+            primary_emotion = PrimaryEmotion.TRUST
+
+        intensity = float(emotion_data.get("intensity", 0.3))
+        # Clamp to valid range
+        intensity = max(0.0, min(1.0, intensity))
+
+        valence = float(emotion_data.get("valence", 0.0))
+        valence = max(-1.0, min(1.0, valence))
+
+        arousal = float(emotion_data.get("arousal", 0.5))
+        arousal = max(0.0, min(1.0, arousal))
+
+        return EmotionResult(
+            primary=EmotionScore(emotion=primary_emotion, intensity=intensity),
+            valence=valence,
+            arousal=arousal,
+            confidence=0.8,
+        )
+    except (TypeError, KeyError, ValueError):
+        return None
+
+
+def _ws_config_to_audio_format(config: AudioConfig) -> AudioFormat:
+    """Convert WebSocket AudioConfig to pipeline AudioFormat.
+
+    Maps the WebSocket-layer encoding enum to the pipeline-layer format.
+    """
+    encoding_map = {
+        AudioEncoding.PCM_S16LE: PipelineAudioEncoding.LINEAR16,
+        AudioEncoding.PCM_F32LE: PipelineAudioEncoding.LINEAR16,  # Best-effort
+        AudioEncoding.OPUS: PipelineAudioEncoding.OGG_OPUS,
+        AudioEncoding.FLAC: PipelineAudioEncoding.FLAC,
+        AudioEncoding.MULAW: PipelineAudioEncoding.MULAW,
+    }
+
+    pipeline_encoding = encoding_map.get(config.encoding, PipelineAudioEncoding.LINEAR16)
+
+    sample_width = 2  # default for 16-bit
+    if config.encoding == AudioEncoding.PCM_F32LE:
+        sample_width = 4
+    elif config.encoding == AudioEncoding.MULAW:
+        sample_width = 1
+
+    return AudioFormat(
+        encoding=pipeline_encoding,
+        sample_rate_hz=config.sample_rate,
+        channels=config.channels,
+        sample_width_bytes=sample_width,
+    )
 
 
 def _estimate_duration_ms(audio_data: bytes, config: AudioConfig) -> int:

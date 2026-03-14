@@ -23,9 +23,7 @@ from typing import Any, Protocol
 from blurt.services.task_surfacing import (
     EnergyLevel,
     ScoredTask,
-    SignalType,
     SurfaceableTask,
-    SurfacingResult,
     SurfacingWeights,
     TaskScoringEngine,
     TaskStatus,
@@ -232,7 +230,6 @@ class TaskSurfacingQueryService:
         Returns:
             SurfacingQueryResult with ranked tasks and metadata.
         """
-        import random
 
         # 1. Get all tasks from the store
         all_tasks = self.store.get_all_tasks(
@@ -279,6 +276,7 @@ class TaskSurfacingQueryService:
         import random
         from blurt.services.thompson_ranking import ThompsonRankingPipeline
 
+        assert self.thompson_pipeline is not None
         pipeline: ThompsonRankingPipeline = self.thompson_pipeline
         result = pipeline.rank(filtered, context)
 

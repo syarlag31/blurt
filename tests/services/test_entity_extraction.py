@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import json
 from typing import Any
-from unittest.mock import AsyncMock, MagicMock, PropertyMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -29,7 +29,6 @@ from blurt.extraction.entities import (
     ExtractionResult,
     TemporalType,
 )
-from blurt.local.extractor import LocalEntityExtractor
 from blurt.memory.episodic import EntityRef
 from blurt.models.entities import EntityType, FactType, RelationshipType
 from blurt.services.entity_extraction import (

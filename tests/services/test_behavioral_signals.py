@@ -13,20 +13,16 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from blurt.services.behavioral_signals import (
-    BehavioralSignal,
     BehavioralSignalCollector,
     InMemorySignalStore,
-    InteractionStats,
     RewardConfig,
-    SignalBatch,
-    SignalContext,
     SignalKind,
     _energy_bucket,
     _load_bucket,
 )
 from blurt.services.feedback import FeedbackAction, FeedbackEvent
 from blurt.services.surfacing.models import BehavioralProfile
-from blurt.services.surfacing.thompson import ArmState, ThompsonSampler
+from blurt.services.surfacing.thompson import ThompsonSampler
 
 
 # ---------------------------------------------------------------------------

@@ -41,7 +41,6 @@ from blurt.extraction.entities import (
 )
 from blurt.local.extractor import LocalEntityExtractor
 from blurt.memory.episodic import EntityRef
-from blurt.models.entities import EntityType
 
 logger = logging.getLogger(__name__)
 
@@ -194,7 +193,7 @@ class EntityExtractionService:
             try:
                 llm = provider.llm_client()
                 cloud_extractor = EntityExtractor(
-                    gemini_client=llm,
+                    gemini_client=llm,  # type: ignore[arg-type]
                     min_confidence=min_confidence,
                     max_entities_per_extraction=max_entities_per_extraction,
                 )

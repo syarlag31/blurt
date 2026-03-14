@@ -19,10 +19,9 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from blurt.classification.models import ClassificationResult, ClassificationStatus
+from blurt.classification.models import ClassificationResult
 from blurt.classification.pipeline import ClassificationPipeline
 from blurt.clients.gemini import GeminiClient
-from blurt.models.intents import BlurtIntent
 
 logger = logging.getLogger(__name__)
 

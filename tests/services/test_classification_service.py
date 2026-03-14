@@ -14,10 +14,8 @@ Validates:
 from __future__ import annotations
 
 import json
-from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
 
 from blurt.classification.classifier import ClassificationError
 from blurt.classification.models import (
@@ -25,8 +23,7 @@ from blurt.classification.models import (
     ClassificationStatus,
     IntentScore,
 )
-from blurt.classification.pipeline import ClassificationPipeline
-from blurt.clients.gemini import GeminiClient, GeminiResponse, ModelTier
+from blurt.clients.gemini import GeminiClient, GeminiResponse
 from blurt.models.intents import BlurtIntent
 from blurt.services.classification import (
     ClassificationResponse,

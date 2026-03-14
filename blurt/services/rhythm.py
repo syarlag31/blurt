@@ -32,7 +32,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Callable
 
 from blurt.memory.episodic import (
     BehavioralSignal,
@@ -456,7 +456,7 @@ def _confidence_from_count(count: int) -> float:
 
 def _episodes_to_weekly_slot_samples(
     episodes: list[Episode],
-    metric_fn: callable,
+    metric_fn: Callable[..., Any],
 ) -> dict[str, list[WeeklySlotSample]]:
     """Group episodes by (day×time) slot and week, computing a metric per week per slot.
 
@@ -645,7 +645,7 @@ def compute_rolling_averages_for_episodes(
 
 def _episodes_to_daily_series(
     episodes: list[Episode],
-    metric_fn: callable,
+    metric_fn: Callable[..., Any],
 ) -> list[float]:
     """Convert episodes to a daily time series for periodicity analysis.
 
@@ -727,7 +727,7 @@ def compute_autocorrelation(series: list[float], lag: int) -> float:
 
 def detect_weekly_periodicity(
     episodes: list[Episode],
-    metric_fn: callable,
+    metric_fn: Callable[..., Any],
 ) -> float:
     """Detect if a metric shows weekly periodicity using autocorrelation at lag=7.
 
@@ -1287,7 +1287,6 @@ class RhythmDetectionService:
         Returns:
             Dict with rhythm context for the current time slot.
         """
-        from datetime import timedelta
         now = datetime.now(timezone.utc)
         start = now - timedelta(weeks=lookback_weeks)
 

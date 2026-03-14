@@ -32,7 +32,7 @@ from blurt.memory.episodic import (
     EpisodeContext,
     InMemoryEpisodicStore,
 )
-from blurt.models.entities import EntityNode, EntityType, RelationshipEdge
+from blurt.models.entities import EntityNode, EntityType
 from blurt.services.recall import PersonalHistoryRecallEngine, RecallConfig
 from blurt.services.relationships import (
     RelationshipConfig,
@@ -224,7 +224,7 @@ class TestRelationshipDecayOverTime:
 
         # Apply decay as if 60 days have passed (2 half-lives)
         future = datetime.now(timezone.utc) + timedelta(days=60)
-        dormant_count = await service.decay_relationships(as_of=future)
+        _dormant_count = await service.decay_relationships(as_of=future)
 
         rel_after = await service.get_relationship_between(alice.id, bob.id)
         assert rel_after is not None
@@ -392,7 +392,7 @@ class TestRecencyWeightedSearch:
             config=recall_config,
         )
 
-        response = await engine.recall(
+        _response = await engine.recall(
             user_id=test_user_id,
             query="Alice Project Alpha",
         )

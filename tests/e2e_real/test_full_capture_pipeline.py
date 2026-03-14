@@ -119,10 +119,10 @@ async def test_full_pipeline_detects_emotion(
     # The episode should carry an emotion snapshot
     episode = result.episode
     assert episode.emotion, (
-        f"Episode has no emotion snapshot despite emotion_detected=True"
+        "Episode has no emotion snapshot despite emotion_detected=True"
     )
     assert episode.emotion.primary, (
-        f"Emotion snapshot has no primary emotion"
+        "Emotion snapshot has no primary emotion"
     )
     # Intensity should be a meaningful value
     assert 0.0 <= episode.emotion.intensity <= 1.0, (
@@ -148,7 +148,7 @@ async def test_full_pipeline_generates_embedding(
     # The episode should have a non-empty embedding
     episode = result.episode
     assert episode.embedding, (
-        f"Episode has no embedding despite embedding_generated=True"
+        "Episode has no embedding despite embedding_generated=True"
     )
     assert len(episode.embedding) == 768, (
         f"Expected 768-dim embedding, got {len(episode.embedding)}"

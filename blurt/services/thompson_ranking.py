@@ -24,10 +24,8 @@ Anti-shame design:
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any
+from datetime import datetime
 
 from blurt.services.feedback import (
     FeedbackAction,
@@ -40,13 +38,10 @@ from blurt.services.task_surfacing import (
     EnergyLevel,
     ScoredTask,
     SurfaceableTask,
-    SurfacingResult,
-    SurfacingWeights,
     TaskScoringEngine,
     TaskStatus,
     UserContext,
 )
-from blurt.services.surfacing.thompson import ThompsonSampler
 from blurt.services.thompson_sampling import (
     ThompsonSamplingEngine,
     FeedbackType,

@@ -15,8 +15,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -28,13 +27,6 @@ from blurt.api.rhythms import (
     set_graph_store,
     set_pattern_service,
     set_rhythm_service,
-)
-from blurt.memory.episodic import (
-    BehavioralSignal,
-    EmotionSnapshot,
-    Episode,
-    EpisodeContext,
-    EpisodicMemoryStore,
 )
 from blurt.models.entities import (
     EntityNode,

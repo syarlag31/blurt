@@ -24,21 +24,16 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from blurt.memory.episodic import EpisodicMemoryStore
 from blurt.memory.graph_store import EntityGraphStore
 from blurt.models.entities import (
     EntityType,
     FactType,
-    LearnedPattern,
-    PatternType,
 )
 from blurt.services.patterns import PatternService
 from blurt.services.rhythm import (
     DetectedRhythm,
-    RhythmAnalysisResult,
     RhythmDetectionService,
     RhythmType,
-    analyze_rhythms,
 )
 
 logger = logging.getLogger(__name__)
@@ -225,7 +220,7 @@ class WeeklyHeatmapResponse(BaseModel):
 # Helpers
 # ---------------------------------------------------------------------------
 
-from blurt.services.rhythm import RHYTHM_TO_PATTERN_TYPE, _generate_recommendations
+from blurt.services.rhythm import RHYTHM_TO_PATTERN_TYPE, _generate_recommendations  # noqa: E402
 
 
 def _rhythm_to_response(r: DetectedRhythm) -> DetectedRhythmResponse:

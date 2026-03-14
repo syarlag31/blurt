@@ -167,7 +167,14 @@ class BlurtConfig:
 
     @classmethod
     def from_env(cls, **overrides: object) -> Self:
-        """Build full config from environment."""
+        """Build full config from environment.
+
+        Loads .env from the current working directory (or project root)
+        before reading environment variables.
+        """
+        from dotenv import load_dotenv
+        load_dotenv()
+
         mode_str = os.environ.get("BLURT_MODE", "cloud").lower()
         mode = DeploymentMode(mode_str) if mode_str in ("cloud", "local") else DeploymentMode.CLOUD
 

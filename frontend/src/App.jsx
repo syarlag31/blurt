@@ -234,6 +234,23 @@ export default function App() {
     ];
   }, [chatMessages, recording]);
 
+  // Show reconnection notice when WS drops mid-session
+  const prevConnected = useRef(connected);
+  useEffect(() => {
+    if (prevConnected.current && !connected && chatMessages.length > 0) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: nextMsgId(),
+          role: 'server',
+          text: 'Reconnecting...',
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+    }
+    prevConnected.current = connected;
+  }, [connected, chatMessages.length]);
+
   // Fetch initial top task on mount via Thompson Sampling surfacing API
   useEffect(() => {
     const fetchTopTask = async () => {
@@ -264,9 +281,9 @@ export default function App() {
     fetchTopTask();
   }, []);
 
-  // Handle text submission
+  // Handle text submission — try WebSocket first, fall back to REST
   const handleTextSubmit = useCallback(
-    (text) => {
+    async (text) => {
       // Optimistically add user message
       setChatMessages((prev) => [
         ...prev,
@@ -278,9 +295,44 @@ export default function App() {
           isVoice: false,
         },
       ]);
-      sendTextInput(text);
+
+      if (connected) {
+        sendTextInput(text);
+      } else {
+        // Fallback: use REST capture endpoint when WS is down
+        try {
+          const res = await fetch(`${API_BASE}/capture/text`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: USER_ID, text }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setChatMessages((prev) => [
+              ...prev,
+              {
+                id: nextMsgId(),
+                role: 'server',
+                text: data.acknowledgment || data.ack || 'Captured.',
+                timestamp: new Date().toISOString(),
+                metadata: data.classification || data.metadata || null,
+              },
+            ]);
+          }
+        } catch {
+          setChatMessages((prev) => [
+            ...prev,
+            {
+              id: nextMsgId(),
+              role: 'server',
+              text: 'Connection lost. Try again.',
+              timestamp: new Date().toISOString(),
+            },
+          ]);
+        }
+      }
     },
-    [sendTextInput],
+    [connected, sendTextInput],
   );
 
   // Handle task actions (complete/defer/drop) via feedback API
@@ -332,7 +384,10 @@ export default function App() {
     [],
   );
 
-  const inputDisabled = !connected || !sessionReady;
+  // Allow text input even if session isn't ready yet — the WS handler
+  // accepts text.input regardless of session state. Only disable if
+  // the WebSocket itself is disconnected.
+  const inputDisabled = !connected;
 
   return (
     <div className="app">

@@ -91,7 +91,7 @@ export function useStatsData(refreshKey = 0, enabled = true) {
     fetchCategory('classifyStats', `${API_BASE}/classify/stats`);
     fetchCategory('capture', `${API_BASE}/blurt/stats`);
     fetchCategory('recall', `${API_BASE}/recall/stats`);
-    fetchCategory('calendar', '/auth/google/status');
+    fetchCategory('calendar', `${API_BASE}/auth/google/status`);
   }, [fetchCategory]);
 
   // Initial fetch + re-fetch on refreshKey change

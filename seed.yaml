@@ -1,0 +1,132 @@
+goal: >
+  Build the backend API for Blurt — a conversational AI second brain with
+  full-duplex voice interaction. Users speak naturally, Blurt captures everything,
+  silently classifies across 7 intents, extracts entities, detects emotion,
+  builds a compounding personal knowledge graph, syncs actions to native tools
+  (Google Calendar, Notion), surfaces the right task based on mood/energy/context,
+  and enables full recall of personal history. Backend-first, validated via dogfooding.
+
+constraints:
+  - Backend/API first — no mobile UI in v1
+  - Gemini 2 multimodal API for voice input (raw audio in, understanding out)
+  - Gemini 2 embeddings for semantic memory and search
+  - Two-model strategy — Flash-Lite for classification/extraction, Flash for reasoning/insights
+  - Cloud-first with end-to-end encryption as default
+  - Local-only option available without feature loss or security regression
+  - Sync to native calendars (Google Calendar) and tools (Notion) — do not build custom calendar logic
+  - Full behavioral learning and pattern detection from v1
+  - Voice is primary input, text is for edits/corrections
+  - Anti-shame design — no streaks, no guilt, no overdue counters
+  - No-tasks-pending is a valid state — never force-surface tasks
+
+acceptance_criteria:
+  - Full-duplex voice input via Gemini 2 multimodal API processes raw audio end-to-end
+  - AI classifies every input across 7 intents (task, event, reminder, idea, journal, update, question) with >85% confidence silently
+  - Entity extraction identifies people, places, projects, organizations from natural speech
+  - Emotion detection using Plutchik's 8 primary emotions with intensity scoring
+  - 3-tier memory system operational (working, episodic, semantic)
+  - Semantic memory uses Gemini 2 embeddings for entity graph and relationship tracking
+  - Episodic memory stores all observations append-only with compression over time
+  - Captures everything said — including casual remarks as observations
+  - Task surfacing engine scores eligible tasks across mood, energy, time-of-day, calendar, entity relevance, and behavioral signals
+  - Pattern detection learns user rhythms (e.g., Thursday afternoon crashes, pre-10AM creativity)
+  - Behavioral learning adjusts task surfacing weights via Thompson Sampling
+  - Google Calendar sync — creates/updates/reads calendar events bidirectionally
+  - Brief verbal acknowledgments returned naturally (not chatty)
+  - QUESTION intent enables full recall of personal history (premium) and structured queries (free)
+  - Blurt responds with a you-are-clear message when no tasks need attention
+  - All data encrypted end-to-end in cloud storage
+  - Local-only mode functions identically without data leakage
+
+ontology_schema:
+  name: BlurtSecondBrain
+  description: >
+    Domain model for an AI second brain that captures, classifies, connects,
+    and surfaces personal thoughts, tasks, events, and patterns
+  fields:
+    - name: blurt
+      type: object
+      description: A single user input (voice or text) with raw content, timestamp, and source modality
+    - name: intent
+      type: string
+      description: Classified intent — one of task, event, reminder, idea, journal, update, question
+    - name: confidence
+      type: number
+      description: Classification confidence score (0.0–1.0)
+    - name: entities
+      type: array
+      description: Extracted entities (people, places, projects, organizations) with types and relationships
+    - name: emotion
+      type: object
+      description: Detected emotional state — Plutchik primary emotion, intensity (0-3), valence, arousal
+    - name: task
+      type: object
+      description: Actionable item with title, effort estimate, priority, status, and tags
+    - name: event
+      type: object
+      description: Calendar event with title, datetime, duration, location, and linked entities
+    - name: reminder
+      type: object
+      description: Time-triggered nudge with message, trigger datetime, and linked entities
+    - name: observation
+      type: object
+      description: Episodic memory entry — mood, intent, entities, time, behavioral signals (append-only)
+    - name: entity_node
+      type: object
+      description: Semantic memory node — person/place/project/org with relationship edges and co-mention strength
+    - name: working_memory
+      type: object
+      description: Session-scoped state — current mood, energy, active task, recent context
+    - name: pattern
+      type: object
+      description: Learned behavioral pattern — time-of-day trends, mood cycles, completion/skip signals
+    - name: user_profile
+      type: object
+      description: Accumulated user model — energy rhythms, preferences, entity graph, behavioral weights
+
+evaluation_principles:
+  - name: pipeline_integrity
+    description: Every blurt flows through classify → extract → detect → store → surface without data loss
+    weight: 1.0
+  - name: classification_accuracy
+    description: Intent classification achieves >85% accuracy across all 7 intent types
+    weight: 0.9
+  - name: memory_compounding
+    description: Knowledge graph grows with each interaction — entities link, relationships strengthen, patterns emerge
+    weight: 0.9
+  - name: voice_naturalness
+    description: Voice input/output feels conversational and responsive, not robotic or laggy
+    weight: 0.8
+  - name: privacy_by_default
+    description: All data E2E encrypted, local-only mode has feature parity, no data leakage vectors
+    weight: 0.9
+  - name: zero_friction
+    description: No user-facing categorization, priority-setting, or organizing required at input time
+    weight: 0.8
+  - name: shame_free
+    description: No streaks, guilt language, overdue counters, or forced engagement
+    weight: 0.7
+
+exit_conditions:
+  - name: full_pipeline_validated
+    description: End-to-end blurt processing works — voice in, classification, entity extraction, emotion detection, memory storage, task surfacing
+    criteria: A single voice blurt successfully flows through all pipeline stages and produces correct outputs
+  - name: memory_persistence
+    description: 3-tier memory system stores and retrieves data correctly across sessions
+    criteria: Observations persist, entity graph builds relationships, working memory reconstructs from recent data
+  - name: pattern_learning
+    description: Behavioral patterns are detected from accumulated data
+    criteria: After simulated usage, system identifies time-of-day and mood-based patterns
+  - name: calendar_sync
+    description: Events created from blurts appear in Google Calendar
+    criteria: Bidirectional sync creates, reads, and updates calendar events
+  - name: query_recall
+    description: QUESTION intent retrieves relevant personal history
+    criteria: User can ask about past blurts and get accurate, contextual answers
+
+metadata:
+  version: 1.0.0
+  timestamp: 2026-03-13
+  ambiguity_score: 0.15
+  source: socratic_interview
+  interview_mode: plugin_fallback
